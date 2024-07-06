@@ -159,23 +159,6 @@ fun AddContactButton(modifier: Modifier = Modifier, vibrator: Vibrator) {
             vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
         }
     ) {
-//        Dialog(onDismissRequest = { }) {
-//            Card(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(200.dp)
-//                    .padding(16.dp),
-//                shape = RoundedCornerShape(16.dp),
-//            ) {
-//                Text(
-//                    text = "This is a minimal dialog",
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .wrapContentSize(Alignment.Center),
-//                    textAlign = TextAlign.Center,
-//                )
-//            }
-//        }
         Box {
             Icon(Icons.Filled.Add, "Floating action button.")
         }
