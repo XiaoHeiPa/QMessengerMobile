@@ -50,6 +50,10 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.squareup.okhttp.bom))
+
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
