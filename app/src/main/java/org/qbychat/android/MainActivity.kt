@@ -57,17 +57,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.vibrator
 
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
-@RequiresApi(Build.VERSION_CODES.Q)
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        startService()
         setContent {
             QMessengerMobileTheme {
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -213,6 +215,19 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onDestroy() {
+        stopService()
+        super.onDestroy()
+    }
+
+    private fun startService() {
+        startService(Intent(baseContext, MessagingService::class.java))
+    }
+
+    private fun stopService() {
+        stopService(Intent(baseContext, MessagingService::class.java))
+    }
 }
 
 private fun Channel.bundle(name: String = "object"): Bundle {
@@ -221,12 +236,11 @@ private fun Channel.bundle(name: String = "object"): Bundle {
     return bundle
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun AddContactButton(modifier: Modifier = Modifier, vibrator: Vibrator) {
     FloatingActionButton(
         onClick = {
-            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+//            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
         }
     ) {
         Box {
