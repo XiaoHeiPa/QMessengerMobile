@@ -58,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.POST_NOTIFICATIONS
+import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.translate
 import org.qbychat.android.utils.vibrator
 
@@ -74,6 +76,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         startService()
         createNotificationChannel(R.string.notification_channel_messages.translate(application))
+        POST_NOTIFICATIONS.requestPermission(this)
         setContent {
             QMessengerMobileTheme {
                 val mContext = LocalContext.current
