@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -16,10 +19,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,7 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,7 +63,6 @@ import org.qbychat.android.utils.vibrator
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.Q)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,8 +72,7 @@ class MainActivity : ComponentActivity() {
             QMessengerMobileTheme {
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
-                val scrollBehavior =
-                    TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+                TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
@@ -112,12 +110,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     },
-                    gesturesEnabled = true
                 ) {
                     Scaffold(
                         modifier = Modifier
                             .fillMaxWidth(),
-//                            .nestedScroll(scrollBehavior.nestedScrollConnection),
                         topBar = {
                             TopAppBar(
                                 colors = TopAppBarDefaults.topAppBarColors(
@@ -171,6 +167,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             val scrollState = rememberScrollState()
+                            val mContext = LocalContext.current
 
                             LazyColumn(
                                 modifier = Modifier
@@ -182,20 +179,23 @@ class MainActivity : ComponentActivity() {
                                     Row(
                                         modifier = Modifier
                                             .padding(10.dp)
-                                            .clickable { }
+                                            .clickable {
+                                                val p0 = Intent(mContext, ChatActivity::class.java)
+                                                p0.putExtra("channel", channel.bundle())
+                                                mContext.startActivity(p0)
+                                            }
                                     ) {
                                         Image(
                                             painter = painterResource(id = R.drawable.ic_launcher_foreground),
                                             contentDescription = "avatar",
                                             modifier = Modifier
                                                 .size(50.dp)
-                                                .clip(CircleShape)                       // clip to the circle shape
+                                                .clip(CircleShape)
                                                 .border(2.dp, Color.Gray, CircleShape)
                                         )
-                                        Column {
+                                        Column(modifier = Modifier.fillMaxWidth()) {
                                             Text(
                                                 text = channel.shownName,
-//                                                style = MaterialTheme.typography.headlineSmall
                                             )
                                             Text(
                                                 text = channel.preview,
@@ -213,6 +213,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+private fun Channel.bundle(name: String = "object"): Bundle {
+    val bundle = Bundle();
+    bundle.putSerializable(name, this)
+    return bundle
 }
 
 @RequiresApi(Build.VERSION_CODES.Q)
