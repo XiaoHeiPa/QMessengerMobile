@@ -3,16 +3,15 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +62,8 @@ import org.qbychat.android.utils.translate
 import org.qbychat.android.utils.vibrator
 
 
+const val CHANNEL_ID = "qmessenger"
+
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
@@ -73,6 +73,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         startService()
+        createNotificationChannel(R.string.notification_channel_messages.translate(application))
         setContent {
             QMessengerMobileTheme {
                 val mContext = LocalContext.current
@@ -204,6 +205,18 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    private fun createNotificationChannel(channelName: String, description: String? = null, importance: Int = NotificationManager.IMPORTANCE_DEFAULT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the NotificationChannel.
+            val mChannel = NotificationChannel(CHANNEL_ID, channelName, importance)
+            mChannel.description = description
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
         }
     }
 

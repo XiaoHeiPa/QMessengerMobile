@@ -1,5 +1,6 @@
 package org.qbychat.android.utils
 
+import android.app.Application
 import android.content.Context
 import android.content.Context.VIBRATOR_SERVICE
 import android.os.Build
@@ -18,3 +19,4 @@ val ComponentActivity.vibrator: Vibrator
     }
 
 fun Int.translate(mContext: Context): String = mContext.getString(this)
+fun Int.translate(application: Application): String = application.getString(this)

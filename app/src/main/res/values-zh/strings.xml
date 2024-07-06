@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about">关于</string>
+    <string name="notification_channel_messages">聊天消息</string>
 </resources>
