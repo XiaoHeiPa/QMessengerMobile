@@ -146,20 +146,20 @@ class MainActivity : ComponentActivity() {
                         },
                         content = { innerPadding ->
                             val channels = arrayListOf<Channel>()
-//                            channels.add(
-//                                Channel(
-//                                    0,
-//                                    "Serren * Banka",
-//                                    "example",
-//                                    false,
-//                                    "Yoshino: Ciallo～(∠・ω< )"
-//                                )
-//                            )
+                            channels.add(
+                                Channel(
+                                    0,
+                                    "Serren * Banka",
+                                    "example",
+                                    false,
+                                    "Yoshino: Ciallo～(∠・ω< )"
+                                )
+                            )
                             repeat(30) { exampleCount ->
                                 channels.add(
                                     Channel(
                                         exampleCount + 1,
-                                        "Example Group",
+                                        "Example Group $exampleCount",
                                         "example",
                                         false,
                                         "nkwjg: hi!"
