@@ -1,3 +1,6 @@
+import com.android.sdklib.AndroidVersion.VersionCodes.UPSIDE_DOWN_CAKE
+import com.android.sdklib.AndroidVersion.VersionCodes.N
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -9,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "org.qbychat.android"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = N
+        targetSdk = UPSIDE_DOWN_CAKE
         versionCode = 1
         versionName = "1.0"
 
