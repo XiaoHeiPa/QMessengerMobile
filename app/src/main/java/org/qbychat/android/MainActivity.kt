@@ -55,15 +55,39 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             QMessengerMobileTheme {
-                Surface {
-                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-                    val scope = rememberCoroutineScope()
-                    val scrollBehavior =
-                        TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                val scope = rememberCoroutineScope()
+                val scrollBehavior =
+                    TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+                ModalNavigationDrawer(
+                    drawerState = drawerState,
+                    drawerContent = {
+                        ModalDrawerSheet {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(text = "qby")
+                                Text(text = "rentler@lunarclient.top", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
+                            }
+                            HorizontalDivider()
+                            NavigationDrawerItem(
+                                icon = { Icon(imageVector = Icons.Outlined.Home, contentDescription = "Homepage") },
+                                label = { Text(text = "主页") },
+                                selected = true,
+                                onClick = {}
+                            )
+                            HorizontalDivider()
+                            NavigationDrawerItem(
+                                icon = { Icon(imageVector = Icons.Outlined.Info, contentDescription = "About") },
+                                label = { Text(text = "关于") },
+                                selected = false,
+                                onClick = { /*TODO*/ }
+                            )
+                        }
+                    },
+                    gesturesEnabled = true
+                ) {
                     Scaffold(
                         modifier = Modifier
                             .fillMaxSize()
-                            .statusBarsPadding()
                             .nestedScroll(scrollBehavior.nestedScrollConnection),
                         topBar = {
                             TopAppBar(
@@ -100,32 +124,7 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         content = {
-                            ModalNavigationDrawer(
-                                drawerState = drawerState,
-                                drawerContent = {
-                                    ModalDrawerSheet {
-                                        Column(modifier = Modifier.padding(16.dp)) {
-                                            Text(text = "qby")
-                                            Text(text = "rentler@lunarclient.top", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
-                                        }
-                                        HorizontalDivider()
-                                        NavigationDrawerItem(
-                                            icon = { Icon(imageVector = Icons.Outlined.Home, contentDescription = "Homepage") },
-                                            label = { Text(text = "主页") },
-                                            selected = true,
-                                            onClick = {}
-                                        )
-                                        HorizontalDivider()
-                                        NavigationDrawerItem(
-                                            icon = { Icon(imageVector = Icons.Outlined.Info, contentDescription = "About") },
-                                            label = { Text(text = "关于") },
-                                            selected = false,
-                                            onClick = { /*TODO*/ }
-                                        )
-                                    }
-                                },
-                                gesturesEnabled = true
-                            ) {}
+
                         }
                     )
                 }
