@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">QvQ</string>
-    <string name="title_activity_chat">ChatActivity</string>
+    <string name="app_name" translatable="false">QvQ</string>
+    <string name="title_activity_chat" translatable="false">ChatActivity</string>
+    <string name="about">About</string>
 </resources>

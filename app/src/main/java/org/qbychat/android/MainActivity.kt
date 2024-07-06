@@ -3,6 +3,7 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -59,7 +60,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.translate
 import org.qbychat.android.utils.vibrator
+
 
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter"
@@ -72,6 +75,7 @@ class MainActivity : ComponentActivity() {
         startService()
         setContent {
             QMessengerMobileTheme {
+                val mContext = LocalContext.current
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -90,23 +94,11 @@ class MainActivity : ComponentActivity() {
                             NavigationDrawerItem(
                                 icon = {
                                     Icon(
-                                        imageVector = Icons.Outlined.Home,
-                                        contentDescription = "Homepage"
-                                    )
-                                },
-                                label = { Text(text = "主页") },
-                                selected = true,
-                                onClick = {}
-                            )
-                            HorizontalDivider()
-                            NavigationDrawerItem(
-                                icon = {
-                                    Icon(
                                         imageVector = Icons.Outlined.Info,
                                         contentDescription = "About"
                                     )
                                 },
-                                label = { Text(text = "关于") },
+                                label = { Text(text = R.string.about.translate(mContext)) },
                                 selected = false,
                                 onClick = { /*TODO*/ }
                             )
@@ -169,7 +161,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             val scrollState = rememberScrollState()
-                            val mContext = LocalContext.current
 
                             LazyColumn(
                                 modifier = Modifier

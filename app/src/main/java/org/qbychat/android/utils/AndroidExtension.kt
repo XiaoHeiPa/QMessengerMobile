@@ -16,3 +16,5 @@ val ComponentActivity.vibrator: Vibrator
         @Suppress("DEPRECATION")
         getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
+
+fun Int.translate(mContext: Context): String = mContext.getString(this)
