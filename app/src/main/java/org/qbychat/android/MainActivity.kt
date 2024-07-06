@@ -116,8 +116,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                            .fillMaxWidth(),
+//                            .nestedScroll(scrollBehavior.nestedScrollConnection),
                         topBar = {
                             TopAppBar(
                                 colors = TopAppBarDefaults.topAppBarColors(
@@ -150,15 +150,15 @@ class MainActivity : ComponentActivity() {
                         },
                         content = { innerPadding ->
                             val channels = arrayListOf<Channel>()
-                            channels.add(
-                                Channel(
-                                    0,
-                                    "Serren * Banka",
-                                    "example",
-                                    false,
-                                    "Yoshino: Ciallo～(∠・ω< )"
-                                )
-                            )
+//                            channels.add(
+//                                Channel(
+//                                    0,
+//                                    "Serren * Banka",
+//                                    "example",
+//                                    false,
+//                                    "Yoshino: Ciallo～(∠・ω< )"
+//                                )
+//                            )
                             repeat(30) { exampleCount ->
                                 channels.add(
                                     Channel(
@@ -175,12 +175,12 @@ class MainActivity : ComponentActivity() {
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(innerPadding)
+                                    .fillMaxWidth()
                                     .horizontalScroll(scrollState)
                             ) {
                                 items(channels) { channel ->
                                     Row(
                                         modifier = Modifier
-                                            .fillMaxWidth()
                                             .padding(10.dp)
                                             .clickable { }
                                     ) {
@@ -195,7 +195,7 @@ class MainActivity : ComponentActivity() {
                                         Column {
                                             Text(
                                                 text = channel.shownName,
-                                                style = MaterialTheme.typography.headlineSmall,
+//                                                style = MaterialTheme.typography.headlineSmall
                                             )
                                             Text(
                                                 text = channel.preview,
