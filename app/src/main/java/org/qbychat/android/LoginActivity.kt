@@ -66,6 +66,7 @@ class LoginActivity : ComponentActivity() {
                             ),
                             modifier = Modifier
                                 .align(Alignment.Center)
+                                .imePadding()
                         ) {
                             Login(modifier = Modifier.padding(16.dp))
                         }
