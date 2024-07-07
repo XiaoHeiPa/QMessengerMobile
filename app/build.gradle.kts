@@ -54,6 +54,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
+
     implementation(platform(libs.squareup.okhttp.bom))
 
     implementation(libs.okhttp)
