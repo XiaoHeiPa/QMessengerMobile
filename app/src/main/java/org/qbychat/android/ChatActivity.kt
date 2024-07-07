@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -91,7 +92,7 @@ fun ChatBox(onSendMessageClicked: (String) -> Unit, modifier: Modifier = Modifie
     var chatBoxValue by remember {
         mutableStateOf(TextFieldValue(""))
     }
-    Row(modifier = modifier.padding(16.dp)) {
+    Row(modifier = modifier.padding(16.dp).imePadding()) {
         TextField(
             value = chatBoxValue,
             onValueChange = { newValue ->
@@ -101,7 +102,7 @@ fun ChatBox(onSendMessageClicked: (String) -> Unit, modifier: Modifier = Modifie
                 .weight(1f)
                 .padding(4.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = TextFieldDefaults.textFieldColors(
+            colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
@@ -136,7 +137,7 @@ fun ChatBox(onSendMessageClicked: (String) -> Unit, modifier: Modifier = Modifie
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview2() {
+fun Preview2() {
     QMessengerMobileTheme {
     }
 }

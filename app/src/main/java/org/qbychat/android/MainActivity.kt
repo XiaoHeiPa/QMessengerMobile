@@ -3,6 +3,7 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
@@ -59,6 +60,7 @@ import kotlinx.coroutines.launch
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.POST_NOTIFICATIONS
+import org.qbychat.android.utils.createNotificationChannel
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.translate
 import org.qbychat.android.utils.vibrator
@@ -82,6 +84,13 @@ class MainActivity : ComponentActivity() {
                 val mContext = LocalContext.current
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
+                val filesDir = mContext.filesDir
+                // check login
+                val accountJson = filesDir.resolve("account.json")
+                if (!accountJson.exists()) {
+                    startActivity(Intent(mContext, LoginActivity::class.java))
+                }
+                // todo connect to the server
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
@@ -208,18 +217,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-        }
-    }
-
-    private fun createNotificationChannel(channelName: String, description: String? = null, importance: Int = NotificationManager.IMPORTANCE_DEFAULT) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create the NotificationChannel.
-            val mChannel = NotificationChannel(CHANNEL_ID, channelName, importance)
-            mChannel.description = description
-            // Register the channel with the system. You can't change the importance
-            // or other notification behaviors after this.
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(mChannel)
         }
     }
 

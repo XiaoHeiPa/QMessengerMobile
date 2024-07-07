@@ -1,23 +1,30 @@
 package org.qbychat.android.utils
 
 import android.app.Activity
+import android.app.Activity.NOTIFICATION_SERVICE
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
+import org.qbychat.android.CHANNEL_ID
 
 const val POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS"
 
-val ComponentActivity.vibrator: Vibrator
+val Activity.vibrator: Vibrator
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
             getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -68,5 +75,17 @@ fun Context.launchSettings() {
         val uri = Uri.fromParts("package", this.packageName, null)
         intent.setData(uri)
         this.startActivity(intent)
+    }
+}
+
+fun Activity.createNotificationChannel(channelName: String, description: String? = null, importance: Int = NotificationManager.IMPORTANCE_DEFAULT) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Create the NotificationChannel.
+        val mChannel = NotificationChannel(CHANNEL_ID, channelName, importance)
+        mChannel.description = description
+        // Register the channel with the system. You can't change the importance
+        // or other notification behaviors after this.
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
     }
 }

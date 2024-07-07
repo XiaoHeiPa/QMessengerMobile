@@ -3,4 +3,10 @@
     <string name="title_activity_chat" translatable="false">ChatActivity</string>
     <string name="about">About</string>
     <string name="notification_channel_messages">Messages</string>
+    <string name="title_activity_login" translatable="false">LoginActivity</string>
+    <string name="login_title">Sign in QMessenger</string>
+    <string name="login_button">Login</string>
+    <string name="register_tip">No account? Please do register at https://chat.lunarclient.top/register</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
 </resources>
