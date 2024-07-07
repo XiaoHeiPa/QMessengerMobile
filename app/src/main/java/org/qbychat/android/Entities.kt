@@ -34,7 +34,9 @@ data class Authorize(
     var role: String,
     var token: String,
     var email: String,
-    var expire: String
+    var expire: String,
+
+    var password: String? = null // for renew token
 )
 
 @Serializable

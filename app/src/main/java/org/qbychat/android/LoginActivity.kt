@@ -6,7 +6,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,12 +37,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.Json
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.login
 import org.qbychat.android.utils.translate
 
@@ -100,6 +104,7 @@ class LoginActivity : ComponentActivity() {
 
     @Composable
     fun Login(modifier: Modifier = Modifier) {
+        val mContext = LocalContext.current
         var username by remember {
             mutableStateOf(TextFieldValue(""))
         }
@@ -142,13 +147,23 @@ class LoginActivity : ComponentActivity() {
         }
         Button(
             onClick = {
-                val authorize = login(username.text, password.text)
-                if (authorize != null) {
-                    // todo store token
-                    finish()
-                } else {
-                    // todo
+                val runnable = Runnable {
+                    val authorize = login(username.text, password.text)
+                    if (authorize != null) {
+                        // todo store token
+                        val filesDir = mContext.filesDir
+                        authorize.password = password.text
+                        filesDir.resolve("account.json").writeText(
+                            JSON.encodeToString(Authorize.serializer(), authorize)
+                        )
+                        startActivity(Intent(mContext, MainActivity::class.java))
+                    } else {
+                        Looper.prepare()
+                        Toast.makeText(mContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
+                        Looper.loop()
+                    }
                 }
+                Thread(runnable).start()
             },
             modifier = Modifier.padding(16.dp)
         ) {
@@ -157,18 +172,10 @@ class LoginActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview3() {
     QMessengerMobileTheme {
-        Greeting("Android")
     }
 }

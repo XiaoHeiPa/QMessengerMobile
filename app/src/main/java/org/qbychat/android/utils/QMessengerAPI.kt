@@ -5,7 +5,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.qbychat.android.Account
 import org.qbychat.android.Authorize
 import org.qbychat.android.RestBean
 
@@ -25,7 +24,7 @@ fun login(username: String, password: String): Authorize? {
         if (this.body == null) {
             return null
         }
-        val response = Json.decodeFromString<RestBean<Authorize>>(this.body!!.string())
+        val response = Json.decodeFromString<RestBean<Authorize?>>(this.body!!.string())
         if (response.code != 200) return null
         return response.data
     }

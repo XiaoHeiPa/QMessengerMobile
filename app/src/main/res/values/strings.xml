@@ -9,4 +9,5 @@
     <string name="register_tip">No account? Please do register at https://chat.lunarclient.top/register</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
+    <string name="login_failed">Login Failed</string>
 </resources>

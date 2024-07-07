@@ -89,6 +89,7 @@ class MainActivity : ComponentActivity() {
                 val accountJson = filesDir.resolve("account.json")
                 if (!accountJson.exists()) {
                     startActivity(Intent(mContext, LoginActivity::class.java))
+                    finish()
                 }
                 // todo connect to the server
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())

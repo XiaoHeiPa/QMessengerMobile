@@ -15,9 +15,12 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
+import kotlinx.serialization.json.Json
 import org.qbychat.android.CHANNEL_ID
 
 const val POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS"
+
+val JSON = Json { ignoreUnknownKeys = true; prettyPrint = true }
 
 val Activity.vibrator: Vibrator
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
