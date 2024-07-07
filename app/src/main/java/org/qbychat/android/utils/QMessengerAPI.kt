@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.qbychat.android.Authorize
+import org.qbychat.android.Friend
 import org.qbychat.android.Group
 import org.qbychat.android.RestBean
 import java.io.File
@@ -43,6 +44,19 @@ fun String.getGroups(): List<Group>? {
     with(httpClient.newCall(request).execute()) {
         if (this.body == null) return null // unreachable
         val response = JSON.decodeFromString<RestBean<List<Group>>>(this.body!!.string())
+        return response.data
+    }
+}
+
+fun String.getFriends(): List<Friend>? {
+    val request = Request.Builder()
+        .url("$HTTP_PROTOCOL$BACKEND/user/friends/list")
+        .get()
+        .header("Authorization", "Bearer $this")
+        .build()
+    with(httpClient.newCall(request).execute()) {
+        if (this.body == null) return null // unreachable
+        val response = JSON.decodeFromString<RestBean<List<Friend>>>(this.body!!.string())
         return response.data
     }
 }

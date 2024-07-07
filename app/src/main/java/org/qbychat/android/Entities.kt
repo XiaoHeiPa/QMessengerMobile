@@ -40,6 +40,13 @@ data class Authorize(
 )
 
 @Serializable
+data class Friend(
+    val id: Int,
+    val username: String,
+    val nickname: String
+)
+
+@Serializable
 data class Group(
     val id: Int,
     val owner: Int,

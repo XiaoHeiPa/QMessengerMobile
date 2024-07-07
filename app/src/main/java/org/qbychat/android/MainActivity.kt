@@ -63,6 +63,7 @@ import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.POST_NOTIFICATIONS
 import org.qbychat.android.utils.createNotificationChannel
+import org.qbychat.android.utils.getFriends
 import org.qbychat.android.utils.getGroups
 import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
@@ -125,8 +126,12 @@ class MainActivity : ComponentActivity() {
                     thread.join()
                 }
                 Thread {
-                    authorize.token.getGroups()!!.forEach { group ->
-                        channels.add(Channel(group.id, group.shownName, group.name, false, ""))
+                    authorize.token.getGroups()?.forEach { group ->
+                        channels.add(Channel(group.id, group.shownName, group.name, false))
+                    }
+
+                    authorize.token.getFriends()?.forEach { friend ->
+                        channels.add(Channel(friend.id, friend.nickname, friend.username, true))
                     }
                 }.start()
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
