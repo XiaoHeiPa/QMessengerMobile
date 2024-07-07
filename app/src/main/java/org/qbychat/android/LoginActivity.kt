@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.login
 import org.qbychat.android.utils.translate
 
 
@@ -141,7 +142,13 @@ class LoginActivity : ComponentActivity() {
         }
         Button(
             onClick = {
-                finish()
+                val authorize = login(username.text, password.text)
+                if (authorize != null) {
+                    // todo store token
+                    finish()
+                } else {
+                    // todo
+                }
             },
             modifier = Modifier.padding(16.dp)
         ) {
