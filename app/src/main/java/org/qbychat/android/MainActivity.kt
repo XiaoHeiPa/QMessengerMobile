@@ -45,6 +45,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,8 +73,6 @@ import java.util.Date
 
 const val CHANNEL_ID = "qmessenger"
 
-val channels = arrayListOf<Channel>()
-
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
@@ -88,6 +90,10 @@ class MainActivity : ComponentActivity() {
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
                 val filesDir = mContext.filesDir
+
+                val channels = remember {
+                    mutableStateListOf<Channel>()
+                }
                 // check login
                 val accountJson = filesDir.resolve("account.json")
                 if (!accountJson.exists()) {
@@ -97,7 +103,11 @@ class MainActivity : ComponentActivity() {
                 var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
                 if (Date().time >= authorize.expire) {
-                    Toast.makeText(mContext, R.string.reflesh_token.translate(application), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        mContext,
+                        R.string.reflesh_token.translate(application),
+                        Toast.LENGTH_LONG
+                    ).show()
                     val runnable = Runnable {
                         val authorize1 = login(authorize.username, authorize.password!!)
                         if (authorize1 == null) {
@@ -118,9 +128,7 @@ class MainActivity : ComponentActivity() {
                     authorize.token.getGroups()!!.forEach { group ->
                         channels.add(Channel(group.id, group.shownName, group.name, false, ""))
                     }
-                }.apply {
-                    start()
-                }
+                }.start()
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
