@@ -4,6 +4,7 @@ import com.android.sdklib.AndroidVersion.VersionCodes.N
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -57,6 +58,8 @@ dependencies {
 
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
