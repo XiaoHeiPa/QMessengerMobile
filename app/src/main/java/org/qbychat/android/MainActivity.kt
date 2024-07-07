@@ -120,7 +120,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }.apply {
                     start()
-                    join()
                 }
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
