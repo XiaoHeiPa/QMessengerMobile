@@ -11,6 +11,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -99,15 +100,22 @@ class MainActivity : ComponentActivity() {
                 var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
                 if (Date().time >= authorize.expire) {
-                    val authorize1 = login(authorize.username, authorize.password!!)
-                    if (authorize1 == null) {
-                        // password changed
-                        doLogin(mContext = mContext)
-                        return@QMessengerMobileTheme
+                    Toast.makeText(mContext, R.string.reflesh_token.translate(application), Toast.LENGTH_LONG)
+                    val runnable = Runnable {
+                        val authorize1 = login(authorize.username, authorize.password!!)
+                        if (authorize1 == null) {
+                            // password changed
+                            doLogin(mContext = mContext)
+                            return@Runnable
+                        }
+                        authorize1.password = authorize.password
+                        authorize = authorize1
+                        // save
+                        saveAuthorize(mContext, authorize1)
                     }
-                    authorize = authorize1
-                    // save
-                    saveAuthorize(mContext, authorize1)
+                    val thread = Thread(runnable)
+                    thread.start()
+                    thread.join()
                 }
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(

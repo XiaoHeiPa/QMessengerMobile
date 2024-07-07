@@ -24,7 +24,7 @@ data class Account(
     val username: String,
     val email: String,
     val role: Role,
-    val registerTime: String,
+    val registerTime: Long,
     val nickname: String,
 )
 
@@ -34,7 +34,7 @@ data class Authorize(
     var role: String,
     var token: String,
     var email: String,
-    var expire: Int,
+    var expire: Long,
 
     var password: String? = null // for renew token
 )

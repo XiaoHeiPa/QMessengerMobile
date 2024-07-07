@@ -147,9 +147,15 @@ class LoginActivity : ComponentActivity() {
                 }
             )
         }
+        var isAuthorizing by remember {
+            mutableStateOf(false)
+        }
+
         Button(
             onClick = {
+                if (isAuthorizing) return@Button
                 val runnable = Runnable {
+                    isAuthorizing = true
                     val authorize = login(username.text, password.text)
                     if (authorize != null) {
                         // todo store token
@@ -161,6 +167,7 @@ class LoginActivity : ComponentActivity() {
                         Toast.makeText(mContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
                         Looper.loop()
                     }
+                    isAuthorizing = false
                 }
                 Thread(runnable).start()
             },
