@@ -9,7 +9,7 @@ data class Channel(
     val shownName: String,
     val name: String,
     val directMessage: Boolean,
-    val preview: String
+    val preview: String = ""
 ) : java.io.Serializable
 
 @Serializable
@@ -23,7 +23,7 @@ data class Account(
     val id: Int,
     val username: String,
     val email: String,
-    val role: Role,
+    val role: Role = Role.USER,
     val registerTime: Long,
     val nickname: String,
 )
@@ -37,6 +37,17 @@ data class Authorize(
     var expire: Long,
 
     var password: String? = null // for renew token
+)
+
+@Serializable
+data class Group(
+    val id: Int,
+    val owner: Int,
+    val name: String,
+    val shownName: String,
+    val description: String?,
+    val createTime: Long,
+    val members: Set<Int>,
 )
 
 @Serializable

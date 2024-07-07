@@ -3,14 +3,9 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.Vibrator
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -64,15 +59,17 @@ import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.POST_NOTIFICATIONS
 import org.qbychat.android.utils.createNotificationChannel
+import org.qbychat.android.utils.getGroups
 import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
-import org.qbychat.android.utils.vibrator
 import java.util.Date
 
 
 const val CHANNEL_ID = "qmessenger"
+
+val channels = arrayListOf<Channel>()
 
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter"
@@ -100,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
                 if (Date().time >= authorize.expire) {
-                    Toast.makeText(mContext, R.string.reflesh_token.translate(application), Toast.LENGTH_LONG)
+                    Toast.makeText(mContext, R.string.reflesh_token.translate(application), Toast.LENGTH_LONG).show()
                     val runnable = Runnable {
                         val authorize1 = login(authorize.username, authorize.password!!)
                         if (authorize1 == null) {
@@ -116,6 +113,14 @@ class MainActivity : ComponentActivity() {
                     val thread = Thread(runnable)
                     thread.start()
                     thread.join()
+                }
+                Thread {
+                    authorize.token.getGroups()!!.forEach { group ->
+                        channels.add(Channel(group.id, group.shownName, group.name, false, ""))
+                    }
+                }.apply {
+                    start()
+                    join()
                 }
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
@@ -175,30 +180,9 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         floatingActionButton = {
-                            AddContactButton(vibrator = this.vibrator)
+                            AddContactButton()
                         },
                         content = { innerPadding ->
-                            val channels = arrayListOf<Channel>()
-                            channels.add(
-                                Channel(
-                                    0,
-                                    "Serren * Banka",
-                                    "example",
-                                    false,
-                                    "Yoshino: Ciallo～(∠・ω< )"
-                                )
-                            )
-                            repeat(30) { exampleCount ->
-                                channels.add(
-                                    Channel(
-                                        exampleCount + 1,
-                                        "Example Group $exampleCount",
-                                        "example",
-                                        false,
-                                        "nkwjg: hi!"
-                                    )
-                                )
-                            }
                             val scrollState = rememberScrollState()
 
                             LazyColumn(
@@ -272,10 +256,10 @@ private fun Channel.bundle(name: String = "object"): Bundle {
 }
 
 @Composable
-fun AddContactButton(modifier: Modifier = Modifier, vibrator: Vibrator) {
+fun AddContactButton(modifier: Modifier = Modifier) {
     FloatingActionButton(
+        shape = CircleShape,
         onClick = {
-//            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
         }
     ) {
         Box {
