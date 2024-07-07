@@ -158,7 +158,6 @@ class LoginActivity : ComponentActivity() {
                     isAuthorizing = true
                     val authorize = login(username.text, password.text)
                     if (authorize != null) {
-                        // todo store token
                         authorize.password = password.text
                         saveAuthorize(mContext, authorize)
                         startActivity(Intent(mContext, MainActivity::class.java))
