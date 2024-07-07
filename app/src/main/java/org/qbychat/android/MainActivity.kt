@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -45,9 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -57,11 +56,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.launch
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.BACKEND
+import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.POST_NOTIFICATIONS
+import org.qbychat.android.utils.account
 import org.qbychat.android.utils.createNotificationChannel
 import org.qbychat.android.utils.getFriends
 import org.qbychat.android.utils.getGroups
@@ -103,6 +107,11 @@ class MainActivity : ComponentActivity() {
                 }
                 var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
+                val accountInfoJson = filesDir.resolve("account-info.json")
+                lateinit var account: Account
+                if (accountInfoJson.exists()) {
+                    account = JSON.decodeFromString(accountInfoJson.readText())
+                }
                 if (Date().time >= authorize.expire) {
                     Toast.makeText(
                         mContext,
@@ -134,17 +143,43 @@ class MainActivity : ComponentActivity() {
                         channels.add(Channel(friend.id, friend.nickname, friend.username, true))
                     }
                 }.start()
+                Thread {
+                    account = authorize.token.account()!!
+                }.apply {
+                    this.start()
+                    if (!accountInfoJson.exists()) {
+                        this.join()
+                        accountInfoJson.writeText(
+                            JSON.encodeToString(
+                                Account.serializer(),
+                                account
+                            )
+                        )
+                    }
+                }
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
                         ModalDrawerSheet {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = authorize.username)
-                                Text(
-                                    text = authorize.email,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                            Row(modifier = Modifier.padding(horizontal = 10.dp)) {
+                                AsyncImage(
+                                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
+                                    contentDescription = "My avatar",
+                                    modifier = Modifier
+                                        .padding(vertical = 16.dp)
+                                        .size(50.dp)
+                                        .clip(CircleShape)
                                 )
+
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(text = account.nickname)
+//                                Text(text = account.username)
+                                    Text(
+                                        text = account.email,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                    )
+                                }
                             }
                             HorizontalDivider()
                             NavigationDrawerItem(
@@ -213,17 +248,19 @@ class MainActivity : ComponentActivity() {
                                                 mContext.startActivity(p0)
                                             }
                                     ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                                        SubcomposeAsyncImage(
+                                            model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${channel.id}&isUser=${if (channel.directMessage) 1 else 0}",
+                                            loading = {
+                                                CircularProgressIndicator()
+                                            },
                                             contentDescription = "avatar",
                                             modifier = Modifier
                                                 .size(50.dp)
                                                 .clip(CircleShape)
-                                                .border(2.dp, Color.Gray, CircleShape)
                                         )
                                         Column(modifier = Modifier.fillMaxWidth()) {
                                             Text(
-                                                text = channel.shownName,
+                                                text = channel.shownName
                                             )
                                             Text(
                                                 text = channel.preview,

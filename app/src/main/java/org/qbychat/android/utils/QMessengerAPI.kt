@@ -6,6 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.qbychat.android.Account
 import org.qbychat.android.Authorize
 import org.qbychat.android.Friend
 import org.qbychat.android.Group
@@ -34,32 +35,25 @@ fun login(username: String, password: String): Authorize? {
     }
 }
 
-// String: token
-fun String.getGroups(): List<Group>? {
+private inline fun <reified T> String.invokeAPI(api: String): T? {
     val request = Request.Builder()
-        .url("$HTTP_PROTOCOL$BACKEND/user/groups/list")
+        .url("$HTTP_PROTOCOL$BACKEND$api")
         .get()
         .header("Authorization", "Bearer $this")
         .build()
     with(httpClient.newCall(request).execute()) {
         if (this.body == null) return null // unreachable
-        val response = JSON.decodeFromString<RestBean<List<Group>>>(this.body!!.string())
+        val response = JSON.decodeFromString<RestBean<T>>(this.body!!.string())
         return response.data
     }
 }
 
-fun String.getFriends(): List<Friend>? {
-    val request = Request.Builder()
-        .url("$HTTP_PROTOCOL$BACKEND/user/friends/list")
-        .get()
-        .header("Authorization", "Bearer $this")
-        .build()
-    with(httpClient.newCall(request).execute()) {
-        if (this.body == null) return null // unreachable
-        val response = JSON.decodeFromString<RestBean<List<Friend>>>(this.body!!.string())
-        return response.data
-    }
-}
+// String: token
+fun String.getGroups(): List<Group>? = this.invokeAPI("/user/groups/list")
+
+fun String.getFriends(): List<Friend>?  = this.invokeAPI("/user/friends/list")
+
+fun String.account(): Account? = this.invokeAPI("/user/account")
 
 fun saveAuthorize(mContext: Context, authorize: Authorize) {
     mContext.filesDir.resolve("account.json").writeText(
