@@ -55,7 +55,7 @@ class ChatActivity : ComponentActivity() {
         setContent {
             QMessengerMobileTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().imePadding(),
                     topBar = {
                         TopAppBar(
                             colors = TopAppBarDefaults.topAppBarColors(
@@ -92,7 +92,7 @@ fun ChatBox(onSendMessageClicked: (String) -> Unit, modifier: Modifier = Modifie
     var chatBoxValue by remember {
         mutableStateOf(TextFieldValue(""))
     }
-    Row(modifier = modifier.padding(16.dp).imePadding()) {
+    Row(modifier = modifier.padding(16.dp)) {
         TextField(
             value = chatBoxValue,
             onValueChange = { newValue ->

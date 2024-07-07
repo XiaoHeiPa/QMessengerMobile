@@ -9,17 +9,12 @@ import android.content.Context
 import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
-import android.view.View
-import android.view.ViewTreeObserver
-import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationManagerCompat
 import org.qbychat.android.CHANNEL_ID
 
 const val POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS"
