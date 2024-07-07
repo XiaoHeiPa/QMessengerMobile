@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -59,11 +60,15 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.POST_NOTIFICATIONS
 import org.qbychat.android.utils.createNotificationChannel
+import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
+import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
 import org.qbychat.android.utils.vibrator
+import java.util.Date
 
 
 const val CHANNEL_ID = "qmessenger"
@@ -88,19 +93,31 @@ class MainActivity : ComponentActivity() {
                 // check login
                 val accountJson = filesDir.resolve("account.json")
                 if (!accountJson.exists()) {
-                    startActivity(Intent(mContext, LoginActivity::class.java))
-                    finish()
+                    doLogin(mContext = mContext)
+                    return@QMessengerMobileTheme
                 }
-                // todo connect to the server
+                var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
+                // check token expire date
+                if (Date().time >= authorize.expire) {
+                    val authorize1 = login(authorize.username, authorize.password!!)
+                    if (authorize1 == null) {
+                        // password changed
+                        doLogin(mContext = mContext)
+                        return@QMessengerMobileTheme
+                    }
+                    authorize = authorize1
+                    // save
+                    saveAuthorize(mContext, authorize1)
+                }
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
                         ModalDrawerSheet {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = "qby")
+                                Text(text = authorize.username)
                                 Text(
-                                    text = "rentler@lunarclient.top",
+                                    text = authorize.email,
                                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                                 )
                             }
@@ -219,6 +236,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun doLogin(mContext: Context) {
+        startActivity(Intent(mContext, LoginActivity::class.java))
+        finish() // kill current activity
     }
 
     override fun onDestroy() {

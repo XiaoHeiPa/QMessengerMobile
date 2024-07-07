@@ -1,5 +1,6 @@
 package org.qbychat.android.utils
 
+import android.content.Context
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -7,6 +8,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.qbychat.android.Authorize
 import org.qbychat.android.RestBean
+import java.io.File
 
 private val httpClient = OkHttpClient.Builder()
     .build()
@@ -28,4 +30,10 @@ fun login(username: String, password: String): Authorize? {
         if (response.code != 200) return null
         return response.data
     }
+}
+
+fun saveAuthorize(mContext: Context, authorize: Authorize) {
+    mContext.filesDir.resolve("account.json").writeText(
+        JSON.encodeToString(Authorize.serializer(), authorize)
+    )
 }

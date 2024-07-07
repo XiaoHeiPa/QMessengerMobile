@@ -47,7 +47,9 @@ import kotlinx.serialization.json.Json
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.login
+import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
+import java.io.File
 
 
 class LoginActivity : ComponentActivity() {
@@ -151,11 +153,8 @@ class LoginActivity : ComponentActivity() {
                     val authorize = login(username.text, password.text)
                     if (authorize != null) {
                         // todo store token
-                        val filesDir = mContext.filesDir
                         authorize.password = password.text
-                        filesDir.resolve("account.json").writeText(
-                            JSON.encodeToString(Authorize.serializer(), authorize)
-                        )
+                        saveAuthorize(mContext, authorize)
                         startActivity(Intent(mContext, MainActivity::class.java))
                     } else {
                         Looper.prepare()
