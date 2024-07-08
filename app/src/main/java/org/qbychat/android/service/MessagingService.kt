@@ -12,6 +12,7 @@ import okhttp3.WebSocket
 import org.qbychat.android.Message
 import org.qbychat.android.MessengerResponse
 import org.qbychat.android.utils.JSON
+import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.connect
 
 class MessagingService : Service() {
@@ -47,10 +48,4 @@ class MessagingService : Service() {
             }
         }
     }
-}
-
-private fun Message.bundle(name: String = "object"): Bundle {
-    val bundle = Bundle()
-    bundle.putSerializable(name, this)
-    return bundle
 }

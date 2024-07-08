@@ -26,7 +26,7 @@ data class Account(
     val role: Role = Role.USER,
     val registerTime: Long,
     val nickname: String,
-)
+): java.io.Serializable
 
 @Serializable
 data class Authorize(

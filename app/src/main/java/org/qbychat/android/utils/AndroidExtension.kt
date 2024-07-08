@@ -11,12 +11,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import kotlinx.serialization.json.Json
 import org.qbychat.android.CHANNEL_ID
+import java.io.Serializable
 
 const val POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS"
 
@@ -86,4 +88,10 @@ fun Activity.createNotificationChannel(channelName: String, description: String?
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
     }
+}
+
+fun Serializable.bundle(name: String = "object"): Bundle {
+    val bundle = Bundle()
+    bundle.putSerializable(name, this)
+    return bundle
 }

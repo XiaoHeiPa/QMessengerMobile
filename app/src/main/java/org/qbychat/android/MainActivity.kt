@@ -69,6 +69,7 @@ import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.POST_NOTIFICATIONS
 import org.qbychat.android.utils.account
+import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.createNotificationChannel
 import org.qbychat.android.utils.getFriends
 import org.qbychat.android.utils.getGroups
@@ -76,6 +77,7 @@ import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
+import java.io.Serializable
 import java.util.Date
 
 
@@ -284,6 +286,7 @@ class MainActivity : ComponentActivity() {
                                             .clickable {
                                                 val p0 = Intent(mContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
+                                                p0.putExtra("account", account.bundle())
                                                 mContext.startActivity(p0)
                                             }
                                     ) {
@@ -322,12 +325,6 @@ class MainActivity : ComponentActivity() {
         startActivity(Intent(mContext, LoginActivity::class.java))
         finish() // kill current activity
     }
-}
-
-private fun Channel.bundle(name: String = "object"): Bundle {
-    val bundle = Bundle()
-    bundle.putSerializable(name, this)
-    return bundle
 }
 
 @Composable

@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,6 +37,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,10 +49,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
-import org.qbychat.android.ui.theme.PurpleGrey80
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.BACKEND
+import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
+import org.qbychat.android.utils.account
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class ChatActivity : ComponentActivity() {
@@ -59,10 +66,16 @@ class ChatActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val channel =
             intent.getBundleExtra("channel")!!.getSerializable("object") as Channel
+        @Suppress("DEPRECATION")
+        val currentUser =
+            intent.getBundleExtra("account")!!.getSerializable("object") as Account
 
         setContent {
             QMessengerMobileTheme {
                 val mContext = LocalContext.current
+                val messages = remember {
+                    mutableStateListOf<Message>()
+                }
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -115,9 +128,23 @@ class ChatActivity : ComponentActivity() {
                     }
 
                 ) { innerPadding ->
+                    repeat(30) { i ->
+                        messages.add(
+                            Message(
+                            id = i,
+                            sender = if (i % 2 == 0) currentUser.id else -1,
+                            to = 3,
+                            directMessage = true,
+                            content = Message.MessageContent(
+                                text = "MSG x$i"
+                            )
+                        ))
+                    }
                     LazyColumn(modifier = Modifier.padding(innerPadding)) {
-                        items(10) { count ->
-                            ChatMessage(message = Message(id = count, sender = 0, to = 1, directMessage = true, content = Message.MessageContent(text = "MSG $count")), isFromMe = true)
+                        items(messages) { message ->
+                            ChatMessage(
+                                message = message, isFromMe = currentUser.id == message.sender
+                            )
                         }
                     }
                 }
@@ -128,9 +155,11 @@ class ChatActivity : ComponentActivity() {
 
 @Composable
 fun ChatMessage(message: Message, isFromMe: Boolean) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(4.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
         Box(
             modifier = Modifier
                 .align(if (isFromMe) Alignment.End else Alignment.Start)
@@ -145,8 +174,21 @@ fun ChatMessage(message: Message, isFromMe: Boolean) {
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(16.dp)
         ) {
+            if (!message.directMessage && !isFromMe) {
+                val account = message.sender!!.account!!
+                AsyncImage(
+                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
+                    contentDescription = "${account.username}'s avatar",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .padding(5.dp)
+                        .size(25.dp)
+                        .clickable { /*TODO*/ }
+                )
+            }
             Text(text = message.content.text, color = MaterialTheme.colorScheme.onPrimary)
         }
+
     }
 }
 
