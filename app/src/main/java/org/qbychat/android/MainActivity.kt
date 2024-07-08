@@ -20,9 +20,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -60,8 +58,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
@@ -117,7 +115,6 @@ class MainActivity : ComponentActivity() {
                 val mContext = LocalContext.current
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
-                val filesDir = mContext.filesDir
 
                 val channels = remember {
                     mutableStateListOf<Channel>()
@@ -130,10 +127,14 @@ class MainActivity : ComponentActivity() {
                 }
                 var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
-                val accountInfoJson = filesDir.resolve("account-info.json")
+                val accountInfoJson = cacheDir.resolve("account-info.json")
+                val channelsCache = cacheDir.resolve("groups.json")
                 lateinit var account: Account
                 if (accountInfoJson.exists()) {
                     account = JSON.decodeFromString(accountInfoJson.readText())
+                }
+                if (channelsCache.exists()) {
+                    channels.addAll(JSON.decodeFromString(channelsCache.readText()))
                 }
                 if (Date().time >= authorize.expire) {
                     Toast.makeText(
@@ -158,13 +159,18 @@ class MainActivity : ComponentActivity() {
                     thread.join()
                 }
                 Thread {
+                    val channels1 = mutableListOf<Channel>()
                     authorize.token.getGroups()?.forEach { group ->
-                        channels.add(Channel(group.id, group.shownName, group.name, false))
+                        channels1.add(Channel(group.id, group.shownName, group.name, false))
                     }
 
                     authorize.token.getFriends()?.forEach { friend ->
-                        channels.add(Channel(friend.id, friend.nickname, friend.username, true))
+                        channels1.add(Channel(friend.id, friend.nickname, friend.username, true))
                     }
+                    channels.clear()
+                    channels.addAll(channels1)
+                    val json = JSON.encodeToString(channels1)
+                    if (json != channelsCache.let { if (it.exists()) it.readText() else "" }) channelsCache.writeText(json)
                 }.start()
                 Thread {
                     account = authorize.token.account()!!
