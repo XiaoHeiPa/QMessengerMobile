@@ -4,6 +4,7 @@ import com.android.sdklib.AndroidVersion.VersionCodes.N
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
     kotlin("plugin.serialization") version "2.0.0"
 }
 
@@ -54,8 +55,13 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
+
     implementation(libs.coil)
     implementation(libs.coil.compose)
+
 
     implementation(platform(libs.squareup.okhttp.bom))
 

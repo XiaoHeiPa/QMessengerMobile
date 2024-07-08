@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "587160259072",
+    "project_id": "qvqmsg",
+    "storage_bucket": "qvqmsg.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587160259072:android:34b35354045c4bfb95e6e5",
+        "android_client_info": {
+          "package_name": "org.qbychat.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCkFCEShMXeJE5BM2AGgcQA3Uic-Sn1qI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
