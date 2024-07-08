@@ -29,7 +29,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -217,13 +219,18 @@ class MainActivity : ComponentActivity() {
                             NavigationDrawerItem(
                                 icon = {
                                     Icon(
-                                        imageVector = Icons.Outlined.Info,
-                                        contentDescription = "About"
+                                        imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                                        contentDescription = "Logout"
                                     )
                                 },
-                                label = { Text(text = R.string.about.translate(mContext)) },
+                                label = { Text(text = R.string.logout.translate(mContext)) },
                                 selected = false,
-                                onClick = { /*TODO*/ }
+                                onClick = {
+                                    accountJson.delete()
+                                    accountInfoJson.delete()
+                                    channelsCache.delete()
+                                    doLogin(mContext)
+                                }
                             )
                         }
                     },
