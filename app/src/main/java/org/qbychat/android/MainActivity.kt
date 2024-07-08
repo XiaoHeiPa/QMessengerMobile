@@ -3,6 +3,8 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.app.job.JobService
+import android.app.job.JobServiceEngine
 import android.content.ComponentName
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -87,28 +89,6 @@ const val CHANNEL_ID = "qmessenger"
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
 class MainActivity : ComponentActivity() {
-    companion object {
-        var messagingService: MessagingService? = null
-        var isServiceBound = false
-    }
-
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as MessagingService.MessagingBinder
-            messagingService = binder.getService()
-            isServiceBound = true
-            Log.d(TAG, "Service connected")
-
-            messagingService!!.connectWS()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            isServiceBound = false
-            Log.d(TAG, "Service disconnected")
-        }
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -119,6 +99,7 @@ class MainActivity : ComponentActivity() {
                 val mContext = LocalContext.current
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
+                startService()
 
                 val channels = remember {
                     mutableStateListOf<Channel>()
@@ -190,7 +171,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
-                if (!isServiceBound) bindService(Intent(mContext, MessagingService::class.java).apply { putExtra("token", authorize.token) }, connection, Context.BIND_AUTO_CREATE)
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
@@ -319,6 +299,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        stopService()
+        super.onDestroy()
+    }
+
+    private fun startService() {
+        startService(Intent(baseContext, MessagingService::class.java))
+    }
+
+    private fun stopService() {
+        stopService(Intent(baseContext, MessagingService::class.java))
     }
 
     private fun doLogin(mContext: Context) {

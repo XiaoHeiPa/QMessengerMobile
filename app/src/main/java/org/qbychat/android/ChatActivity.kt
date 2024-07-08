@@ -57,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
+import org.qbychat.android.service.MessagingService
 import org.qbychat.android.service.RECEIVED_MESSAGE
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
@@ -86,6 +87,7 @@ class ChatActivity : ComponentActivity() {
 
     private val messageReceiver = MessageReceiver()
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +117,7 @@ class ChatActivity : ComponentActivity() {
                 messageReceiver.setList(messages)
 
                 Thread {
-                    MainActivity.messagingService?.websocket?.send(
+                    MessagingService.websocket?.send(
                         MessengerRequest(
                             RequestType.FETCH_LATEST_MESSAGES,
                             MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
@@ -147,15 +149,7 @@ class ChatActivity : ComponentActivity() {
                     },
                     bottomBar = {
                         ChatBox({ messageContent ->
-                            if (!MainActivity.isServiceBound) {
-                                Toast.makeText(
-                                    mContext,
-                                    R.string.service_disabled,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                return@ChatBox
-                            }
-                            val websocket = MainActivity.messagingService!!.websocket
+                            val websocket = MessagingService.websocket!!
                             val request = MessengerRequest(
                                 SEND_MESSAGE,
                                 Message(
@@ -164,7 +158,7 @@ class ChatActivity : ComponentActivity() {
                                     content = Message.MessageContent(text = messageContent)
                                 )
                             )
-                            websocket?.send(
+                            websocket.send(
                                 JSON.encodeToString(
                                     MessengerRequest.serializer(Message.serializer()),
                                     request
