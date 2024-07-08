@@ -92,7 +92,7 @@ class ChatActivity : ComponentActivity() {
                                 return@ChatBox
                             }
                             val websocket = MainActivity.messagingService!!.websocket
-                            val request = Request(
+                            val request = MessengerRequest(
                                 SEND_MESSAGE,
                                 Message(
                                     to = channel.id,
@@ -102,7 +102,7 @@ class ChatActivity : ComponentActivity() {
                             )
                             websocket?.send(
                                 JSON.encodeToString(
-                                    Request.serializer(Message.serializer()),
+                                    MessengerRequest.serializer(Message.serializer()),
                                     request
                                 )
                             )

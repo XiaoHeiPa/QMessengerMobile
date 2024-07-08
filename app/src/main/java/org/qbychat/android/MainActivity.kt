@@ -318,7 +318,7 @@ class MainActivity : ComponentActivity() {
 }
 
 private fun Channel.bundle(name: String = "object"): Bundle {
-    val bundle = Bundle();
+    val bundle = Bundle()
     bundle.putSerializable(name, this)
     return bundle
 }

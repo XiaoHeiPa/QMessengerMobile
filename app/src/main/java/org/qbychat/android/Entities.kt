@@ -47,10 +47,25 @@ data class Friend(
 )
 
 @Serializable
-data class Request<T>(
+data class MessengerRequest<T>(
     val method: String,
     val data: T
 )
+
+@Serializable
+data class MessengerResponse<T>(
+    val method: String,
+    val data: T? = null,
+    val hasError: Boolean = false
+) {
+    companion object {
+        const val HAS_FRIEND = "has-friend"
+        const val FRIEND_REQUEST = "friend-request"
+        const val FRIEND_REQUEST_SENT = "friend-request-sent"
+        const val CHAT_MESSAGE = "chat-message"
+        const val USER_INFO = "user-info"
+    }
+}
 
 @Serializable
 data class Message(
@@ -61,7 +76,7 @@ data class Message(
     val directMessage: Boolean,
     val timestamp: Long = 0, // auto generated
     val content: MessageContent
-) {
+): java.io.Serializable {
     enum class MessageType {
         TEXT,
         IMAGE

@@ -13,6 +13,8 @@ import org.qbychat.android.Account
 import org.qbychat.android.Authorize
 import org.qbychat.android.Friend
 import org.qbychat.android.Group
+import org.qbychat.android.Message
+import org.qbychat.android.MessengerResponse
 import org.qbychat.android.RestBean
 
 
@@ -65,7 +67,7 @@ fun saveAuthorize(mContext: Context, authorize: Authorize) {
 }
 
 // WS
-fun String.connect(): WebSocket {
+fun String.connect(onMessage: (websocket: WebSocket, response: MessengerResponse<Any>) -> Unit): WebSocket {
     val request: Request = Request.Builder()
         .url("$WS_PROTOCOL$BACKEND/ws/messenger")
         .header("Authorization", "Bearer $this")
@@ -74,12 +76,17 @@ fun String.connect(): WebSocket {
     val webSocket: WebSocket = httpClient.newWebSocket(request, object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             super.onOpen(webSocket, response)
-            Log.v("Websocket", "WebSocket opened")
+            Log.i("Websocket", "WebSocket opened")
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
-            Log.v("Websocket" ,"Received message: $text")
+            Log.i("Websocket" ,"Received message: $text")
+            val response = JSON.decodeFromString<MessengerResponse<Any>>(text)
+            if (response.hasError) {
+                return // do nothing
+            }
+            onMessage(webSocket, response)
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
