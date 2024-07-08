@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -125,8 +126,7 @@ class ChatActivity : ComponentActivity() {
                 }.start()
                 Scaffold(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .imePadding(),
+                        .fillMaxSize(),
                     topBar = {
                         TopAppBar(
                             colors = TopAppBarDefaults.topAppBarColors(
@@ -147,7 +147,7 @@ class ChatActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        ChatBox({ messageContent ->
+                        ChatBox { messageContent ->
                             val websocket = MessagingService.websocket!!
                             val request = MessengerRequest(
                                 SEND_MESSAGE,
@@ -163,12 +163,19 @@ class ChatActivity : ComponentActivity() {
                                     request
                                 )
                             )
-                        })
+                        }
                     }
 
                 ) { innerPadding ->
-                    LazyColumn(modifier = Modifier.padding(innerPadding)) {
-                        items(messages) { message ->
+                    LazyColumn(
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        items(
+                            items = messages,
+                            key = { message1 ->
+                                message1.id!!
+                            }
+                        ) { message ->
                             ChatMessage(
                                 message = message, isFromMe = currentUser.id == message.sender
                             )
@@ -180,7 +187,7 @@ class ChatActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        unregisterReceiver(messageReceiver);
+        unregisterReceiver(messageReceiver)
         super.onDestroy()
     }
 }
@@ -225,11 +232,11 @@ fun ChatMessage(message: Message, isFromMe: Boolean) {
 }
 
 @Composable
-fun ChatBox(onSendMessageClicked: (String) -> Unit, modifier: Modifier = Modifier) {
+fun ChatBox(modifier: Modifier = Modifier, onSendMessageClicked: (String) -> Unit) {
     var chatBoxValue by remember {
         mutableStateOf(TextFieldValue(""))
     }
-    Row(modifier = modifier.padding(16.dp)) {
+    Row(modifier = Modifier.padding(16.dp)) {
         TextField(
             value = chatBoxValue,
             onValueChange = { newValue ->

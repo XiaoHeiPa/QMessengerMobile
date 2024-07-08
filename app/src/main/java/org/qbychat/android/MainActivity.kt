@@ -31,8 +31,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.ExitToApp
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -77,7 +75,6 @@ import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
-import java.io.Serializable
 import java.util.Date
 
 
@@ -172,7 +169,9 @@ class MainActivity : ComponentActivity() {
                     channels.clear()
                     channels.addAll(channels1)
                     val json = JSON.encodeToString(channels1)
-                    if (json != channelsCache.let { if (it.exists()) it.readText() else "" }) channelsCache.writeText(json)
+                    if (json != channelsCache.let { if (it.exists()) it.readText() else "" }) channelsCache.writeText(
+                        json
+                    )
                 }.start()
                 Thread {
                     account = authorize.token.account()!!
@@ -188,7 +187,14 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
-                if (!isServiceBound) bindService(Intent(mContext, MessagingService::class.java).apply { putExtra("token", authorize.token) }, connection, Context.BIND_AUTO_CREATE)
+                if (!isServiceBound) bindService(
+                    Intent(
+                        mContext,
+                        MessagingService::class.java
+                    ).apply { putExtra("token", authorize.token) },
+                    connection,
+                    Context.BIND_AUTO_CREATE
+                )
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
@@ -277,7 +283,12 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                     .horizontalScroll(scrollState)
                             ) {
-                                items(channels) { channel ->
+                                items(
+                                    items = channels,
+                                    key = { channel ->
+                                        channel.id
+                                    }
+                                ) { channel ->
                                     Row(
                                         modifier = Modifier
                                             .padding(10.dp)
