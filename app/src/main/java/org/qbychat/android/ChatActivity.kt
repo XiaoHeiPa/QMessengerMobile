@@ -72,12 +72,10 @@ class ChatActivity : ComponentActivity() {
         private lateinit var messages: SnapshotStateList<Message>
 
         override fun onReceive(mContext: Context, intent: Intent) {
-            if (intent.action == MessengerResponse.CHAT_MESSAGE) {
-                @Suppress("DEPRECATION")
-                val message =
-                    intent.getBundleExtra("message")!!.getSerializable("object") as Message
-                messages.add(message)
-            }
+            @Suppress("DEPRECATION")
+            val message =
+                intent.getBundleExtra("message")!!.getSerializable("object") as Message
+            messages.add(message)
         }
 
         fun setList(messages: SnapshotStateList<Message>) {
@@ -104,7 +102,7 @@ class ChatActivity : ComponentActivity() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(RECEIVED_MESSAGE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(messageReceiver, intentFilter, RECEIVER_NOT_EXPORTED)
+            registerReceiver(messageReceiver, intentFilter, RECEIVER_EXPORTED)
         } else {
             registerReceiver(messageReceiver, intentFilter)
         }
