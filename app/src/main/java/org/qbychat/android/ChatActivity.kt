@@ -9,10 +9,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -42,6 +46,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
+import org.qbychat.android.ui.theme.PurpleGrey80
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.JSON
 
@@ -110,9 +115,37 @@ class ChatActivity : ComponentActivity() {
                     }
 
                 ) { innerPadding ->
-
+                    LazyColumn(modifier = Modifier.padding(innerPadding)) {
+                        items(10) { count ->
+                            ChatMessage(message = Message(id = count, sender = 0, to = 1, directMessage = true, content = Message.MessageContent(text = "MSG $count")), isFromMe = true)
+                        }
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ChatMessage(message: Message, isFromMe: Boolean) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(4.dp)) {
+        Box(
+            modifier = Modifier
+                .align(if (isFromMe) Alignment.End else Alignment.Start)
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 48f,
+                        topEnd = 48f,
+                        bottomStart = if (isFromMe) 48f else 0f,
+                        bottomEnd = if (isFromMe) 0f else 48f
+                    )
+                )
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(16.dp)
+        ) {
+            Text(text = message.content.text, color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
