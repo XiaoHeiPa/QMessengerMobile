@@ -20,7 +20,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -184,7 +186,7 @@ class MainActivity : ComponentActivity() {
                     drawerState = drawerState,
                     drawerContent = {
                         ModalDrawerSheet {
-                            Row(modifier = Modifier.padding(horizontal = 10.dp)) {
+                            Row(modifier = Modifier.padding(5.dp)) {
                                 SubcomposeAsyncImage(
                                     model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
                                     loading = {
@@ -192,13 +194,13 @@ class MainActivity : ComponentActivity() {
                                     },
                                     contentDescription = "avatar",
                                     modifier = Modifier
-                                        .size(50.dp)
+                                        .size(64.dp)
                                         .clip(CircleShape)
                                 )
 
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(text = account.nickname)
-//                                Text(text = account.username)
+//                                    Spacer(modifier = Modifier.height(5.dp))
                                     Text(
                                         text = account.email,
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
