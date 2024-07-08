@@ -50,6 +50,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.serialization.builtins.serializer
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
@@ -66,10 +67,18 @@ class ChatActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val channel =
             intent.getBundleExtra("channel")!!.getSerializable("object") as Channel
+
         @Suppress("DEPRECATION")
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
-
+        Thread {
+            MainActivity.messagingService?.websocket?.send(
+                MessengerRequest(
+                    RequestType.FETCH_LATEST_MESSAGES,
+                    MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
+                ).json(MessengerRequest.FetchLatestMessages.serializer())
+            )
+        }.start()
         setContent {
             QMessengerMobileTheme {
                 val mContext = LocalContext.current
@@ -128,18 +137,6 @@ class ChatActivity : ComponentActivity() {
                     }
 
                 ) { innerPadding ->
-                    repeat(30) { i ->
-                        messages.add(
-                            Message(
-                            id = i,
-                            sender = if (i % 2 == 0) currentUser.id else -1,
-                            to = 3,
-                            directMessage = true,
-                            content = Message.MessageContent(
-                                text = "MSG x$i"
-                            )
-                        ))
-                    }
                     LazyColumn(modifier = Modifier.padding(innerPadding)) {
                         items(messages) { message ->
                             ChatMessage(

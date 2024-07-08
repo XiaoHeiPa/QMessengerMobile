@@ -1,6 +1,8 @@
 package org.qbychat.android
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import org.qbychat.android.utils.JSON
 
 
 @Serializable
@@ -49,8 +51,17 @@ data class Friend(
 @Serializable
 data class MessengerRequest<T>(
     val method: String,
-    val data: T
-)
+    val data: T?
+) {
+    fun json(dataSerial: KSerializer<T>): String =
+        JSON.encodeToString(serializer(dataSerial), this)
+
+    @Serializable
+    data class FetchLatestMessages(
+        val channel: Int,
+        val directMessage: Boolean
+    )
+}
 
 @Serializable
 data class MessengerResponse<T>(
@@ -111,5 +122,6 @@ interface RequestType {
         const val SEND_MESSAGE: String = "send-message"
         const val ADD_FRIEND: String = "add-friend"
         const val ACCEPT_FRIEND_REQUEST: String = "accept-friend-request"
+        const val FETCH_LATEST_MESSAGES: String = "fetch-latest-messages"
     }
 }

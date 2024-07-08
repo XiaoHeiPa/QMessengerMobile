@@ -3,11 +3,8 @@ package org.qbychat.android.service
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
-import android.os.Bundle
 import android.os.IBinder
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
 import okhttp3.WebSocket
 import org.qbychat.android.Message
 import org.qbychat.android.MessengerResponse
@@ -40,11 +37,13 @@ class MessagingService : Service() {
             if (response.hasError) {
                 return@connect // do nothing
             }
-            if (response.method == MessengerResponse.CHAT_MESSAGE) {
-                val message = JSON.decodeFromJsonElement(Message.serializer(), response.data!!)
-                sendBroadcast(Intent(MessengerResponse.CHAT_MESSAGE).apply {
-                    putExtra("message", message.bundle())
-                })
+            when (response.method) {
+                MessengerResponse.CHAT_MESSAGE -> {
+                    val message = JSON.decodeFromJsonElement(Message.serializer(), response.data!!)
+                    sendBroadcast(Intent(MessengerResponse.CHAT_MESSAGE).apply {
+                        putExtra("message", message.bundle())
+                    })
+                }
             }
         }
     }
