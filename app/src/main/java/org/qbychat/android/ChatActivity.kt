@@ -113,15 +113,15 @@ class ChatActivity : ComponentActivity() {
                     mutableStateListOf<Message>()
                 }
                 messageReceiver.setList(messages)
-
-                Thread {
-                    MessagingService.websocket?.send(
-                        MessengerRequest(
-                            RequestType.FETCH_LATEST_MESSAGES,
-                            MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
-                        ).json(MessengerRequest.FetchLatestMessages.serializer())
-                    )
-                }.start()
+//
+//                Thread {
+//                    MessagingService.websocket?.send(
+//                        MessengerRequest(
+//                            RequestType.FETCH_LATEST_MESSAGES,
+//                            MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
+//                        ).json(MessengerRequest.FetchLatestMessages.serializer())
+//                    )
+//                }.start()
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()

@@ -14,7 +14,9 @@ import org.qbychat.android.Authorize
 import org.qbychat.android.Friend
 import org.qbychat.android.Group
 import org.qbychat.android.Message
+import org.qbychat.android.MessengerRequest
 import org.qbychat.android.MessengerResponse
+import org.qbychat.android.RequestType
 import org.qbychat.android.RestBean
 
 
