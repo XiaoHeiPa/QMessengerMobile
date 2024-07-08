@@ -3,10 +3,12 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -156,17 +158,22 @@ class LoginActivity : ComponentActivity() {
                 if (isAuthorizing) return@Button
                 val runnable = Runnable {
                     isAuthorizing = true
-                    val authorize = login(username.text, password.text)
-                    if (authorize != null) {
-                        authorize.password = password.text
-                        saveAuthorize(mContext, authorize)
-                        startActivity(Intent(mContext, MainActivity::class.java))
-                    } else {
-                        Looper.prepare()
-                        Toast.makeText(mContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
-                        Looper.loop()
+                    try {
+                        val authorize = login(username.text, password.text)
+                        if (authorize != null) {
+                            authorize.password = password.text
+                            saveAuthorize(mContext, authorize)
+                            startActivity(Intent(mContext, MainActivity::class.java))
+                        } else {
+                            Looper.prepare()
+                            Toast.makeText(mContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
+                            Looper.loop()
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, e.stackTraceToString())
+                    } finally {
+                        isAuthorizing = false
                     }
-                    isAuthorizing = false
                 }
                 Thread(runnable).start()
             },
