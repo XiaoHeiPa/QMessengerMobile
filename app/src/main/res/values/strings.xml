@@ -11,4 +11,5 @@
     <string name="login_password">Password</string>
     <string name="login_failed">Login Failed</string>
     <string name="reflesh_token">Refleshing account</string>
+    <string name="service_disabled">Please DO NOT disable Messaging Service</string>
 </resources>

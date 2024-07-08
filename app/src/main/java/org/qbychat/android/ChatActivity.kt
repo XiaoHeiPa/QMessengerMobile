@@ -4,6 +4,7 @@ package org.qbychat.android
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,10 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.JSON
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class ChatActivity : ComponentActivity() {
@@ -54,8 +57,11 @@ class ChatActivity : ComponentActivity() {
 
         setContent {
             QMessengerMobileTheme {
+                val mContext = LocalContext.current
                 Scaffold(
-                    modifier = Modifier.fillMaxSize().imePadding(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding(),
                     topBar = {
                         TopAppBar(
                             colors = TopAppBarDefaults.topAppBarColors(
@@ -76,7 +82,31 @@ class ChatActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        ChatBox({})
+                        ChatBox({ messageContent ->
+                            if (!MainActivity.isServiceBound) {
+                                Toast.makeText(
+                                    mContext,
+                                    R.string.service_disabled,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return@ChatBox
+                            }
+                            val websocket = MainActivity.messagingService!!.websocket
+                            val request = Request(
+                                SEND_MESSAGE,
+                                Message(
+                                    to = channel.id,
+                                    directMessage = channel.directMessage,
+                                    content = Message.MessageContent(text = messageContent)
+                                )
+                            )
+                            websocket?.send(
+                                JSON.encodeToString(
+                                    Request.serializer(Message.serializer()),
+                                    request
+                                )
+                            )
+                        })
                     }
 
                 ) { innerPadding ->

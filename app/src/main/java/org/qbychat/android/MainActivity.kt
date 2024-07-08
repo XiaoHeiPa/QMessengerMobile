@@ -3,15 +3,18 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -51,13 +54,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
@@ -82,11 +83,31 @@ const val CHANNEL_ID = "qmessenger"
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
 class MainActivity : ComponentActivity() {
+    companion object {
+        var messagingService: MessagingService? = null
+        var isServiceBound = false
+    }
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MessagingService.MessagingBinder
+            messagingService = binder.getService()
+            isServiceBound = true
+            Log.d(TAG, "Service connected")
+
+            messagingService!!.connect()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isServiceBound = false
+            Log.d(TAG, "Service disconnected")
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        startService()
         createNotificationChannel(R.string.notification_channel_messages.translate(application))
         POST_NOTIFICATIONS.requestPermission(this)
         setContent {
@@ -157,17 +178,20 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
+                bindService(Intent(mContext, MessagingService::class.java).apply { putExtra("token", authorize.token) }, connection, Context.BIND_AUTO_CREATE)
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
                         ModalDrawerSheet {
                             Row(modifier = Modifier.padding(horizontal = 10.dp)) {
-                                AsyncImage(
+                                SubcomposeAsyncImage(
                                     model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
-                                    contentDescription = "My avatar",
+                                    loading = {
+                                        CircularProgressIndicator()
+                                    },
+                                    contentDescription = "avatar",
                                     modifier = Modifier
-                                        .padding(vertical = 16.dp)
                                         .size(50.dp)
                                         .clip(CircleShape)
                                 )
@@ -282,19 +306,6 @@ class MainActivity : ComponentActivity() {
     private fun doLogin(mContext: Context) {
         startActivity(Intent(mContext, LoginActivity::class.java))
         finish() // kill current activity
-    }
-
-    override fun onDestroy() {
-        stopService()
-        super.onDestroy()
-    }
-
-    private fun startService() {
-        startService(Intent(baseContext, MessagingService::class.java))
-    }
-
-    private fun stopService() {
-        stopService(Intent(baseContext, MessagingService::class.java))
     }
 }
 

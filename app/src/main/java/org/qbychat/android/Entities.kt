@@ -47,6 +47,35 @@ data class Friend(
 )
 
 @Serializable
+data class Request<T>(
+    val method: String,
+    val data: T
+)
+
+@Serializable
+data class Message(
+    val id: Int? = null, // auto generated
+    val sender: Int? = null, // auto generated
+    val to: Int,
+    val type: MessageType = MessageType.TEXT,
+    val directMessage: Boolean,
+    val timestamp: Long = 0, // auto generated
+    val content: MessageContent
+) {
+    enum class MessageType {
+        TEXT,
+        IMAGE
+    }
+
+    @Serializable
+    data class MessageContent(
+        val text: String,
+        val description: String = "Message content",
+        val replyTo: Int? = null
+    )
+}
+
+@Serializable
 data class Group(
     val id: Int,
     val owner: Int,
@@ -59,3 +88,13 @@ data class Group(
 
 @Serializable
 data class RestBean<T>(val code: Int, val data: T, val message: String?)
+
+
+interface RequestType {
+    companion object {
+        // Messenger
+        const val SEND_MESSAGE: String = "send-message"
+        const val ADD_FRIEND: String = "add-friend"
+        const val ACCEPT_FRIEND_REQUEST: String = "accept-friend-request"
+    }
+}
