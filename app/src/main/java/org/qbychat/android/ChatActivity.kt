@@ -75,6 +75,8 @@ class ChatActivity : ComponentActivity() {
             val message =
                 intent.getBundleExtra("message")!!.getSerializable("object") as Message
             messages.add(message)
+            if (messages.size > 100) messages.removeRange(0, 50)
+            messages.sortByDescending { message1 -> message1.id }
         }
 
         fun setList(messages: SnapshotStateList<Message>) {
