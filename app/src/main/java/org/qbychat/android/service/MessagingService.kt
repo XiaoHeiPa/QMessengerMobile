@@ -12,6 +12,8 @@ import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.connect
 
+const val RECEIVED_MESSAGE = "org.qbychat.android.RECEIVED_MESSAGE"
+
 class MessagingService : Service() {
     private val mBinder = MessagingBinder()
 
@@ -40,7 +42,7 @@ class MessagingService : Service() {
             when (response.method) {
                 MessengerResponse.CHAT_MESSAGE -> {
                     val message = JSON.decodeFromJsonElement(Message.serializer(), response.data!!)
-                    sendBroadcast(Intent(MessengerResponse.CHAT_MESSAGE).apply {
+                    sendBroadcast(Intent(RECEIVED_MESSAGE).apply {
                         putExtra("message", message.bundle())
                     })
                 }

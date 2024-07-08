@@ -3,6 +3,11 @@
 package org.qbychat.android
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -41,6 +46,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,16 +56,37 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import kotlinx.serialization.builtins.serializer
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
+import org.qbychat.android.service.RECEIVED_MESSAGE
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.account
 
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class ChatActivity : ComponentActivity() {
+    class MessageReceiver : BroadcastReceiver() {
+        private lateinit var messages: SnapshotStateList<Message>
+
+        override fun onReceive(mContext: Context, intent: Intent) {
+            if (intent.action == MessengerResponse.CHAT_MESSAGE) {
+                @Suppress("DEPRECATION")
+                val message =
+                    intent.getBundleExtra("message")!!.getSerializable("object") as Message
+                messages.add(message)
+            }
+        }
+
+        fun setList(messages: SnapshotStateList<Message>) {
+            this.messages = messages
+        }
+    }
+
+    private val messageReceiver = MessageReceiver()
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -71,20 +98,30 @@ class ChatActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
-        Thread {
-            MainActivity.messagingService?.websocket?.send(
-                MessengerRequest(
-                    RequestType.FETCH_LATEST_MESSAGES,
-                    MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
-                ).json(MessengerRequest.FetchLatestMessages.serializer())
-            )
-        }.start()
+
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(RECEIVED_MESSAGE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(messageReceiver, intentFilter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(messageReceiver, intentFilter)
+        }
         setContent {
             QMessengerMobileTheme {
                 val mContext = LocalContext.current
                 val messages = remember {
                     mutableStateListOf<Message>()
                 }
+                messageReceiver.setList(messages)
+
+                Thread {
+                    MainActivity.messagingService?.websocket?.send(
+                        MessengerRequest(
+                            RequestType.FETCH_LATEST_MESSAGES,
+                            MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
+                        ).json(MessengerRequest.FetchLatestMessages.serializer())
+                    )
+                }.start()
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -147,6 +184,11 @@ class ChatActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(messageReceiver);
+        super.onDestroy()
     }
 }
 

@@ -38,11 +38,7 @@
         </activity>
 
         <service android:name=".service.MessagingService" />
-        <receiver android:name=".receiver.MessageReceiver" android:exported="false">
-            <intent-filter>
-                <action android:name="chat-message" />
-            </intent-filter>
-        </receiver>
+        <receiver android:name=".ChatActivity$MessageReceiver"/>
     </application>
 
 </manifest>

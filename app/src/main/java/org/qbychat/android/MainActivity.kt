@@ -190,7 +190,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
-                bindService(Intent(mContext, MessagingService::class.java).apply { putExtra("token", authorize.token) }, connection, Context.BIND_AUTO_CREATE)
+                if (!isServiceBound) bindService(Intent(mContext, MessagingService::class.java).apply { putExtra("token", authorize.token) }, connection, Context.BIND_AUTO_CREATE)
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
