@@ -85,9 +85,9 @@ data class Message(
     @Serializable
     data class MessageContent(
         val text: String,
-        val description: String = "Message content",
+        val description: String? = "Message content",
         val replyTo: Int? = null
-    )
+    ): java.io.Serializable
 }
 
 @Serializable

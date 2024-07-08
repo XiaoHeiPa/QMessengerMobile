@@ -66,8 +66,28 @@ fun saveAuthorize(mContext: Context, authorize: Authorize) {
     )
 }
 
+// Int: userId
+private val accountMap = mutableMapOf<Int, Account>()
+
+val Int.account: Account?
+    get() {
+        if (accountMap.containsKey(this)) return accountMap[this]
+
+        val request = Request.Builder()
+            .url("$HTTP_PROTOCOL$BACKEND$/user/query?id=$this")
+            .get()
+            .build()
+        with(httpClient.newCall(request).execute()) {
+            if (this.body == null) return null // unreachable
+            val response = JSON.decodeFromString<RestBean<Account>>(this.body!!.string())
+            val account = response.data
+            accountMap[this@account] = account
+            return account
+        }
+    }
+
 // WS
-fun String.connect(onMessage: (websocket: WebSocket, response: MessengerResponse<Any>) -> Unit): WebSocket {
+fun String.connect(onMessageReceived: (websocket: WebSocket, response: String) -> Unit): WebSocket {
     val request: Request = Request.Builder()
         .url("$WS_PROTOCOL$BACKEND/ws/messenger")
         .header("Authorization", "Bearer $this")
@@ -82,11 +102,7 @@ fun String.connect(onMessage: (websocket: WebSocket, response: MessengerResponse
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
             Log.i("Websocket" ,"Received message: $text")
-            val response = JSON.decodeFromString<MessengerResponse<Any>>(text)
-            if (response.hasError) {
-                return // do nothing
-            }
-            onMessage(webSocket, response)
+            onMessageReceived(webSocket, text)
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

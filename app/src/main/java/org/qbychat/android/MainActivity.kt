@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
             isServiceBound = true
             Log.d(TAG, "Service connected")
 
-            messagingService!!.connect()
+            messagingService!!.connectWS()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
