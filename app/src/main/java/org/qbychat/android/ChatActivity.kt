@@ -76,7 +76,7 @@ class ChatActivity : ComponentActivity() {
                 intent.getBundleExtra("message")!!.getSerializable("object") as Message
             messages.add(message)
             if (messages.size > 100) messages.removeRange(0, 50)
-            messages.sortedBy { message1 -> message1.id }
+            messages.sortBy { message1 -> message1.id }
         }
 
         fun setList(messages: SnapshotStateList<Message>) {
