@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="org.qbychat.android" />
+                  <option name="mobileSdkAppId" value="1:587160259072:android:34b35354045c4bfb95e6e5" />
+                  <option name="projectId" value="qvqmsg" />
+                  <option name="projectNumber" value="587160259072" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

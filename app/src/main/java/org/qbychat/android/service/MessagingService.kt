@@ -13,7 +13,6 @@ import okhttp3.WebSocket
 import org.qbychat.android.Message
 import org.qbychat.android.MessengerResponse
 import org.qbychat.android.utils.JSON
-import org.qbychat.android.utils.account
 import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.connect
 import org.qbychat.android.utils.updateFCMToken
@@ -63,6 +62,8 @@ class MessagingService : Service() {
         }
         return mBinder
     }
+
+
 
     override fun onDestroy() {
         websocket?.close(200, null)

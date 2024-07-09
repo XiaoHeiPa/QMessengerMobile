@@ -62,6 +62,19 @@ private inline fun <reified T> String.invokeAPI(api: String, crossinline onSucce
     })
 }
 
+private inline fun <reified T> String.invokeAPI(api: String): T? {
+    val request = Request.Builder()
+        .url("$HTTP_PROTOCOL$BACKEND$api")
+        .get()
+        .header("Authorization", "Bearer $this")
+        .build()
+    with(httpClient.newCall(request).execute()) {
+        if (this.body == null) return null // unreachable
+        val response = JSON.decodeFromString<RestBean<T>>(this.body!!.string())
+        return response.data
+    }
+}
+
 // String: token
 fun String.getGroups(onSuccess: (List<Group>) -> Unit) = this.invokeAPI("/user/groups/list") { _, response ->
     onSuccess(response.data!!)
@@ -78,6 +91,13 @@ fun String.account(onSuccess: (Account) -> Unit) {
         onSuccess(response.data)
     }
 }
+
+fun String.getGroups(): List<Group>? = this.invokeAPI("/user/groups/list")
+
+fun String.getFriends(): List<Friend>?  = this.invokeAPI("/user/friends/list")
+
+fun String.account(): Account? = this.invokeAPI("/user/account")
+
 
 fun String.updateFCMToken(fcmToken: String) {
     val body = "newToken=$fcmToken".toRequestBody("application/x-www-form-urlencoded".toMediaType())
