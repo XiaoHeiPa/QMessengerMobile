@@ -1,7 +1,10 @@
 package org.qbychat.android.utils
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,11 +16,9 @@ import org.qbychat.android.Account
 import org.qbychat.android.Authorize
 import org.qbychat.android.Friend
 import org.qbychat.android.Group
-import org.qbychat.android.Message
-import org.qbychat.android.MessengerRequest
 import org.qbychat.android.MessengerResponse
-import org.qbychat.android.RequestType
 import org.qbychat.android.RestBean
+import java.io.IOException
 
 
 private val httpClient = OkHttpClient.Builder()
@@ -42,36 +43,58 @@ fun login(username: String, password: String): Authorize? {
     }
 }
 
-private inline fun <reified T> String.invokeAPI(api: String): T? {
+private inline fun <reified T> String.invokeAPI(api: String, crossinline onSuccess: (call: Call, response: RestBean<T>) -> Unit) {
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND$api")
         .get()
         .header("Authorization", "Bearer $this")
         .build()
-    with(httpClient.newCall(request).execute()) {
-        if (this.body == null) return null // unreachable
-        val response = JSON.decodeFromString<RestBean<T>>(this.body!!.string())
-        return response.data
-    }
+    httpClient.newCall(request).enqueue(object: Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.e(TAG, e.stackTraceToString())
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val response1 = JSON.decodeFromString<RestBean<T>>(response.body!!.string())
+            onSuccess(call, response1)
+        }
+
+    })
 }
 
 // String: token
-fun String.getGroups(): List<Group>? = this.invokeAPI("/user/groups/list")
+fun String.getGroups(onSuccess: (List<Group>) -> Unit) = this.invokeAPI("/user/groups/list") { _, response ->
+    onSuccess(response.data!!)
+}
 
-fun String.getFriends(): List<Friend>?  = this.invokeAPI("/user/friends/list")
+fun String.getFriends(onSuccess: (List<Friend>) -> Unit) {
+    this.invokeAPI("/user/friends/list") { _, response ->
+        onSuccess(response.data)
+    }
+}
 
-fun String.account(): Account? = this.invokeAPI("/user/account")
+fun String.account(onSuccess: (Account) -> Unit) {
+    this.invokeAPI("/user/account") { _, response ->
+        onSuccess(response.data)
+    }
+}
 
-fun String.updateFCMToken(fcmToken: String): Boolean {
+fun String.updateFCMToken(fcmToken: String) {
     val body = "newToken=$fcmToken".toRequestBody("application/x-www-form-urlencoded".toMediaType())
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND/user/fcm/token")
         .header("Authorization", this)
         .post(body)
         .build()
-    with(httpClient.newCall(request).execute()) {
-        return this.isSuccessful
-    }
+    httpClient.newCall(request).enqueue(object: Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.e(TAG, e.stackTraceToString())
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+
+        }
+    })
 }
 
 fun saveAuthorize(mContext: Context, authorize: Authorize) {

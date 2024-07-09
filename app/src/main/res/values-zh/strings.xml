@@ -11,4 +11,5 @@
     <string name="reflesh_token">token失效, 尝试重新获取</string>
     <string name="service_disabled">错误: 消息服务启动失败或者被禁用</string>
     <string name="logout">退出登录</string>
+    <string name="unknown_user">未知用户</string>
 </resources>

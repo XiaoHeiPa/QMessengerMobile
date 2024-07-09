@@ -55,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAny
 import coil.compose.AsyncImage
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
 import org.qbychat.android.service.MessagingService
@@ -75,7 +76,7 @@ class ChatActivity : ComponentActivity() {
             @Suppress("DEPRECATION")
             val message =
                 intent.getBundleExtra("message")!!.getSerializable("object") as Message
-            messages.add(message)
+            if (!messages.any { it.id == message.id }) messages.add(message)
             if (messages.size > 100) messages.removeRange(0, 50)
             messages.sortBy { message1 -> message1.id }
         }
@@ -214,10 +215,9 @@ fun ChatMessage(message: Message, isFromMe: Boolean) {
                 .padding(16.dp)
         ) {
             if (!message.directMessage && !isFromMe) {
-                val account = message.sender!!.account!!
                 AsyncImage(
-                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
-                    contentDescription = "${account.username}'s avatar",
+                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
+                    contentDescription = "avatar",
                     modifier = Modifier
                         .clip(CircleShape)
                         .padding(5.dp)

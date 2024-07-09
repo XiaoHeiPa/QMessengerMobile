@@ -49,17 +49,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import org.qbychat.android.service.MessagingService
@@ -111,6 +112,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         createNotificationChannel(R.string.notification_channel_messages.translate(application))
         POST_NOTIFICATIONS.requestPermission(this)
+
+
         setContent {
             QMessengerMobileTheme {
                 val mContext = LocalContext.current
@@ -129,13 +132,19 @@ class MainActivity : ComponentActivity() {
                 var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
                 val accountInfoJson = cacheDir.resolve("account-info.json")
-                val channelsCache = cacheDir.resolve("groups.json")
-                lateinit var account: Account
+                var account by remember {
+                    mutableStateOf(
+                        Account(
+                            -1,
+                            "null",
+                            "null@lunarclient.top",
+                            registerTime = 0,
+                            nickname = R.string.unknown_user.translate(application)
+                        )
+                    )
+                }
                 if (accountInfoJson.exists()) {
                     account = JSON.decodeFromString(accountInfoJson.readText())
-                }
-                if (channelsCache.exists()) {
-                    channels.addAll(JSON.decodeFromString(channelsCache.readText()))
                 }
                 if (Date().time >= authorize.expire) {
                     Toast.makeText(
@@ -159,44 +168,18 @@ class MainActivity : ComponentActivity() {
                     thread.start()
                     thread.join()
                 }
-                Thread {
-                    val channels1 = mutableListOf<Channel>()
-                    authorize.token.getGroups()?.forEach { group ->
-                        channels1.add(Channel(group.id, group.shownName, group.name, false))
-                    }
-
-                    authorize.token.getFriends()?.forEach { friend ->
-                        channels1.add(Channel(friend.id, friend.nickname, friend.username, true))
-                    }
-                    channels.clear()
-                    channels.addAll(channels1)
-                    val json = JSON.encodeToString(channels1)
-                    if (json != channelsCache.let { if (it.exists()) it.readText() else "" }) channelsCache.writeText(
-                        json
+                authorize.token.account {
+                    account = it
+                    if (!isServiceBound) bindService(
+                        Intent(
+                            mContext,
+                            MessagingService::class.java
+                        ).apply { putExtra("token", authorize.token) },
+                        connection,
+                        Context.BIND_AUTO_CREATE
                     )
-                }.start()
-                Thread {
-                    account = authorize.token.account()!!
-                }.apply {
-                    this.start()
-                    if (!accountInfoJson.exists()) {
-                        this.join()
-                        accountInfoJson.writeText(
-                            JSON.encodeToString(
-                                Account.serializer(),
-                                account
-                            )
-                        )
-                    }
                 }
-                if (!isServiceBound) bindService(
-                    Intent(
-                        mContext,
-                        MessagingService::class.java
-                    ).apply { putExtra("token", authorize.token) },
-                    connection,
-                    Context.BIND_AUTO_CREATE
-                )
+
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
                 ModalNavigationDrawer(
                     drawerState = drawerState,
@@ -236,7 +219,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     accountJson.delete()
                                     accountInfoJson.delete()
-                                    channelsCache.delete()
+                                    stopService(Intent(mContext, MessagingService::class.java))
                                     doLogin(mContext)
                                 }
                             )
@@ -278,7 +261,31 @@ class MainActivity : ComponentActivity() {
                         },
                         content = { innerPadding ->
                             val scrollState = rememberScrollState()
+                            authorize.token.getGroups {
+                                it.forEach { group ->
+                                    channels.add(
+                                        Channel(
+                                            group.id,
+                                            group.shownName,
+                                            group.name,
+                                            false
+                                        )
+                                    )
+                                }
+                            }
 
+                            authorize.token.getFriends {
+                                it.forEach { friend ->
+                                    channels.add(
+                                        Channel(
+                                            friend.id,
+                                            friend.nickname,
+                                            friend.username,
+                                            true
+                                        )
+                                    )
+                                }
+                            }
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(innerPadding)
@@ -288,7 +295,7 @@ class MainActivity : ComponentActivity() {
                                 items(
                                     items = channels,
                                     key = { channel ->
-                                        channel.id
+                                        channel.name
                                     }
                                 ) { channel ->
                                     Row(
@@ -336,6 +343,8 @@ class MainActivity : ComponentActivity() {
         startActivity(Intent(mContext, LoginActivity::class.java))
         finish() // kill current activity
     }
+
+
 }
 
 @Composable

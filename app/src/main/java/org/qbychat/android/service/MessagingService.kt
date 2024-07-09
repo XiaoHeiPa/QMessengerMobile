@@ -13,6 +13,7 @@ import okhttp3.WebSocket
 import org.qbychat.android.Message
 import org.qbychat.android.MessengerResponse
 import org.qbychat.android.utils.JSON
+import org.qbychat.android.utils.account
 import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.connect
 import org.qbychat.android.utils.updateFCMToken
@@ -42,7 +43,7 @@ class MessagingService : Service() {
             // Get new FCM registration token
             val fcmToken = task.result
 
-            // Log and toast
+            // Log
             Log.d(TAG, "FCM token: $fcmToken")
             token.updateFCMToken(fcmToken)
         })
