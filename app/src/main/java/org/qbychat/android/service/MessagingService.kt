@@ -3,9 +3,14 @@ package org.qbychat.android.service
 import android.app.Service
 import android.app.job.JobParameters
 import android.app.job.JobService
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
+import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.serialization.json.JsonObject
 import okhttp3.WebSocket
 import org.qbychat.android.Message
@@ -30,6 +35,19 @@ class MessagingService : Service() {
 
     override fun onBind(p0: Intent): IBinder {
         token = p0.getStringExtra("token")!!
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d(TAG, "token$token")
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
 
         websocket?.close(200, null)
         websocket = token.connect { _, responseJson ->
