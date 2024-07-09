@@ -62,6 +62,17 @@ fun String.getFriends(): List<Friend>?  = this.invokeAPI("/user/friends/list")
 
 fun String.account(): Account? = this.invokeAPI("/user/account")
 
+fun String.updateFCMToken(fcmToken: String): Boolean {
+    val body = "newToken=$fcmToken".toRequestBody("application/x-www-form-urlencoded".toMediaType())
+    val request = Request.Builder()
+        .url("$HTTP_PROTOCOL$BACKEND/user/fcm/token")
+        .post(body)
+        .build()
+    with(httpClient.newCall(request).execute()) {
+        return this.isSuccessful
+    }
+}
+
 fun saveAuthorize(mContext: Context, authorize: Authorize) {
     mContext.filesDir.resolve("account.json").writeText(
         JSON.encodeToString(Authorize.serializer(), authorize)

@@ -1,14 +1,11 @@
 package org.qbychat.android.service
 
 import android.app.Service
-import android.app.job.JobParameters
-import android.app.job.JobService
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.serialization.json.JsonObject
@@ -18,6 +15,7 @@ import org.qbychat.android.MessengerResponse
 import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.connect
+import org.qbychat.android.utils.updateFCMToken
 
 const val RECEIVED_MESSAGE = "org.qbychat.android.RECEIVED_MESSAGE"
 
@@ -42,11 +40,11 @@ class MessagingService : Service() {
             }
 
             // Get new FCM registration token
-            val token = task.result
+            val fcmToken = task.result
 
             // Log and toast
-            Log.d(TAG, "token$token")
-            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "FCM token: $fcmToken")
+            token.updateFCMToken(fcmToken)
         })
 
         websocket?.close(200, null)
