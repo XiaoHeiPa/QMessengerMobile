@@ -66,6 +66,7 @@ fun String.updateFCMToken(fcmToken: String): Boolean {
     val body = "newToken=$fcmToken".toRequestBody("application/x-www-form-urlencoded".toMediaType())
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND/user/fcm/token")
+        .header("Authorization", this)
         .post(body)
         .build()
     with(httpClient.newCall(request).execute()) {
