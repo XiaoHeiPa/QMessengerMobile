@@ -165,9 +165,7 @@ class ChatActivity : ComponentActivity() {
                     }
 
                 ) { innerPadding ->
-                    var lastSender by remember {
-                        mutableIntStateOf(-1)
-                    }
+                    var lastSender = -1
                     LazyColumn(
                         modifier = Modifier.padding(innerPadding)
                     ) {
