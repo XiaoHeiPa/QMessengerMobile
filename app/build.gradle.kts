@@ -55,6 +55,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.work.rxjava2)
+    implementation(libs.androidx.work.gcm)
+    androidTestImplementation(libs.androidx.work.testing)
+    implementation(libs.androidx.work.multiprocess)
+    
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging)

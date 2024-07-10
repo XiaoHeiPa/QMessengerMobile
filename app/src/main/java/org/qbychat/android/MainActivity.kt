@@ -60,8 +60,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.launch
+import org.qbychat.android.service.AccountWorker
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
@@ -167,6 +171,16 @@ class MainActivity : ComponentActivity() {
                     thread.start()
                     thread.join()
                 }
+
+                val accountWorkRequest: WorkRequest =
+                    OneTimeWorkRequestBuilder<AccountWorker>()
+                        .build()
+
+                WorkManager
+                    .getInstance(mContext)
+                    .enqueue(accountWorkRequest)
+
+
                 authorize.token.account {
                     account = it
                     if (!isServiceBound) bindService(
