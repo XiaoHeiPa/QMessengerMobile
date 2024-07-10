@@ -73,6 +73,7 @@ import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.createNotificationChannel
 import org.qbychat.android.utils.getFriends
 import org.qbychat.android.utils.getGroups
+import org.qbychat.android.utils.isAppInForeground
 import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
@@ -86,10 +87,11 @@ const val CHANNEL_ID = "qmessenger"
     "UnusedMaterial3ScaffoldPaddingParameter"
 )
 class MainActivity : ComponentActivity() {
+    lateinit var authorize: Authorize
     companion object {
         var messagingService: MessagingService? = null
         var isServiceBound = false
-        lateinit var authorize: Authorize
+
 
 
         val connection = object : ServiceConnection {
@@ -107,6 +109,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!isServiceBound && ::authorize.isInitialized) {
+            Log.v(TAG, "Service not running... Starting service...")
+            baseContext.bindService(
+                Intent(
+                    baseContext,
+                    MessagingService::class.java
+                ).apply { putExtra("token", authorize.token) },
+                connection,
+                Context.BIND_AUTO_CREATE
+            )
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

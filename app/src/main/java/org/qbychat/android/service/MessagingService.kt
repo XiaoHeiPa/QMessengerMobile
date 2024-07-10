@@ -23,17 +23,17 @@ import org.qbychat.android.utils.updateFCMToken
 
 
 const val RECEIVED_MESSAGE = "org.qbychat.android.RECEIVED_MESSAGE"
-
+private lateinit var localToken: String
 
 class UnlockReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (isAppInForeground(context) && intent.action == Intent.ACTION_USER_PRESENT && !MainActivity.isServiceBound) {
+        if (isAppInForeground(context) && intent.action == Intent.ACTION_USER_PRESENT && !MainActivity.isServiceBound && ::localToken.isInitialized) {
             Log.v(TAG, "Starting service...")
             context.bindService(
                 Intent(
                     context,
                     MessagingService::class.java
-                ).apply { putExtra("token", MainActivity.authorize.token) },
+                ).apply { putExtra("token", localToken) },
                 MainActivity.connection,
                 Context.BIND_AUTO_CREATE
             )
@@ -57,6 +57,7 @@ class MessagingService : Service() {
 
     override fun onBind(p0: Intent): IBinder {
         token = p0.getStringExtra("token")!!
+        localToken = token
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(TAG, "Fetching FCM registration token failed", task.exception)
