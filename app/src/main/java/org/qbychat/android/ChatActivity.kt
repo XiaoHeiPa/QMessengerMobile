@@ -200,6 +200,21 @@ fun ChatMessage(message: Message, isFromMe: Boolean) {
             .fillMaxWidth()
             .padding(4.dp)
     ) {
+        Row {
+            if (!message.directMessage && !isFromMe) {
+                AsyncImage(
+                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
+                    contentDescription = "avatar",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .padding(5.dp)
+                        .size(30.dp)
+                        .clickable { /*TODO*/ }
+                )
+
+            }
+            Text(text = message.senderInfo.nickname)
+        }
         Box(
             modifier = Modifier
                 .align(if (isFromMe) Alignment.End else Alignment.Start)
@@ -214,17 +229,6 @@ fun ChatMessage(message: Message, isFromMe: Boolean) {
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(16.dp)
         ) {
-            if (!message.directMessage && !isFromMe) {
-                AsyncImage(
-                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
-                    contentDescription = "avatar",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .padding(5.dp)
-                        .size(25.dp)
-                        .clickable { /*TODO*/ }
-                )
-            }
             Text(text = message.content.text, color = MaterialTheme.colorScheme.onPrimary)
         }
 

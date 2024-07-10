@@ -86,8 +86,11 @@ data class Message(
     val type: MessageType = MessageType.TEXT,
     val directMessage: Boolean,
     val timestamp: Long = 0, // auto generated
-    val content: MessageContent
+    val content: MessageContent,
+    val senderInfo: Account = Account(-1, "UNKNOWN", "unknown@lunarclient.top", registerTime = -1, nickname = "UNKNOWN USER")
 ): java.io.Serializable {
+
+
     enum class MessageType {
         TEXT,
         IMAGE
