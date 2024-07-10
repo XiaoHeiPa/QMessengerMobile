@@ -89,19 +89,21 @@ class MainActivity : ComponentActivity() {
     companion object {
         var messagingService: MessagingService? = null
         var isServiceBound = false
-    }
+        lateinit var authorize: Authorize
 
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as MessagingService.MessagingBinder
-            messagingService = binder.getService()
-            isServiceBound = true
-            Log.d(TAG, "Service connected")
-        }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            isServiceBound = false
-            Log.d(TAG, "Service disconnected")
+        val connection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val binder = service as MessagingService.MessagingBinder
+                messagingService = binder.getService()
+                isServiceBound = true
+                Log.d(TAG, "Service connected")
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                isServiceBound = false
+                Log.d(TAG, "Service disconnected")
+            }
         }
     }
 
@@ -128,7 +130,7 @@ class MainActivity : ComponentActivity() {
                     doLogin(mContext = mContext)
                     return@QMessengerMobileTheme
                 }
-                var authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
+                authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
                 val accountInfoJson = cacheDir.resolve("account-info.json")
                 var account by remember {

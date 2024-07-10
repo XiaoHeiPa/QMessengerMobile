@@ -2,6 +2,7 @@ package org.qbychat.android.utils
 
 import android.app.Activity
 import android.app.Activity.NOTIFICATION_SERVICE
+import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -95,3 +96,19 @@ fun Serializable.bundle(name: String = "object"): Bundle {
     bundle.putSerializable(name, this)
     return bundle
 }
+
+fun isAppInForeground(context: Context): Boolean {
+    val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    val packageName = context.packageName
+
+    val runningAppProcesses = activityManager.runningAppProcesses ?: return false
+
+    for (processInfo in runningAppProcesses) {
+        if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            && processInfo.processName == packageName) {
+            return true
+        }
+    }
+    return false
+}
+

@@ -144,7 +144,7 @@ val Int.account: Account?
     }
 
 // WS
-fun String.connect(onMessageReceived: (websocket: WebSocket, response: String) -> Unit): WebSocket {
+fun String.connect(onWSClosed: () -> Unit = {}, onMessageReceived: (websocket: WebSocket, response: String) -> Unit): WebSocket {
     val request: Request = Request.Builder()
         .url("$WS_PROTOCOL$BACKEND/ws/messenger")
         .header("Authorization", "Bearer $this")
@@ -165,6 +165,11 @@ fun String.connect(onMessageReceived: (websocket: WebSocket, response: String) -
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             super.onFailure(webSocket, t, response)
             t.printStackTrace()
+        }
+
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            super.onClosed(webSocket, code, reason)
+            onWSClosed()
         }
     })
     return webSocket
