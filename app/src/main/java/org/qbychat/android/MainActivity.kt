@@ -60,12 +60,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.launch
-import org.qbychat.android.service.AccountWorker
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
@@ -155,34 +151,25 @@ class MainActivity : ComponentActivity() {
                         R.string.reflesh_token.translate(application),
                         Toast.LENGTH_LONG
                     ).show()
-                    val runnable = Runnable {
+                    Thread {
                         val authorize1 = login(authorize.username, authorize.password!!)
                         if (authorize1 == null) {
                             // password changed
                             doLogin(mContext = mContext)
-                            return@Runnable
+                            return@Thread
                         }
                         authorize1.password = authorize.password
                         authorize = authorize1
                         // save
                         saveAuthorize(mContext, authorize1)
+                    }.apply {
+                        start()
+                        join()
                     }
-                    val thread = Thread(runnable)
-                    thread.start()
-                    thread.join()
                 }
 
-                val accountWorkRequest: WorkRequest =
-                    OneTimeWorkRequestBuilder<AccountWorker>()
-                        .build()
-
-                WorkManager
-                    .getInstance(mContext)
-                    .enqueue(accountWorkRequest)
-
-
-                authorize.token.account {
-                    account = it
+                Thread {
+                    account = authorize.token.account()!!
                     if (!isServiceBound) bindService(
                         Intent(
                             mContext,
@@ -191,6 +178,32 @@ class MainActivity : ComponentActivity() {
                         connection,
                         Context.BIND_AUTO_CREATE
                     )
+
+
+                    authorize.token.getGroups()?.forEach { group ->
+                        channels.add(
+                            Channel(
+                                group.id,
+                                group.shownName,
+                                group.name,
+                                false
+                            )
+                        )
+                    }
+
+                    authorize.token.getFriends()?.forEach { friend ->
+                        channels.add(
+                            Channel(
+                                friend.id,
+                                friend.nickname,
+                                friend.username,
+                                true
+                            )
+                        )
+                    }
+
+                }.apply {
+                    start()
                 }
 
                 TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -274,31 +287,6 @@ class MainActivity : ComponentActivity() {
                         },
                         content = { innerPadding ->
                             val scrollState = rememberScrollState()
-                            authorize.token.getGroups {
-                                it.forEach { group ->
-                                    channels.add(
-                                        Channel(
-                                            group.id,
-                                            group.shownName,
-                                            group.name,
-                                            false
-                                        )
-                                    )
-                                }
-                            }
-
-                            authorize.token.getFriends {
-                                it.forEach { friend ->
-                                    channels.add(
-                                        Channel(
-                                            friend.id,
-                                            friend.nickname,
-                                            friend.username,
-                                            true
-                                        )
-                                    )
-                                }
-                            }
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(innerPadding)
