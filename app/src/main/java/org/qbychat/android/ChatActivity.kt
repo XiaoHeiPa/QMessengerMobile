@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,6 +40,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +54,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastAny
 import coil.compose.AsyncImage
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
 import org.qbychat.android.service.MessagingService
@@ -64,7 +62,6 @@ import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
-import org.qbychat.android.utils.account
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -168,6 +165,9 @@ class ChatActivity : ComponentActivity() {
                     }
 
                 ) { innerPadding ->
+                    var lastSender by remember {
+                        mutableIntStateOf(-1)
+                    }
                     LazyColumn(
                         modifier = Modifier.padding(innerPadding)
                     ) {
@@ -178,8 +178,11 @@ class ChatActivity : ComponentActivity() {
                             }
                         ) { message ->
                             ChatMessage(
-                                message = message, isFromMe = currentUser.id == message.sender
+                                message = message,
+                                isFromMe = currentUser.id == message.sender,
+                                lastSender = lastSender
                             )
+                            lastSender = message.sender!!
                         }
                     }
                 }
@@ -194,26 +197,24 @@ class ChatActivity : ComponentActivity() {
 }
 
 @Composable
-fun ChatMessage(message: Message, isFromMe: Boolean) {
+fun ChatMessage(message: Message, isFromMe: Boolean, lastSender: Int? = null) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
     ) {
         Row {
-            if (!message.directMessage && !isFromMe) {
+            if (!message.directMessage && !isFromMe && lastSender != message.sender) {
                 AsyncImage(
                     model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
                     contentDescription = "avatar",
                     modifier = Modifier
                         .clip(CircleShape)
-                        .padding(5.dp)
                         .size(30.dp)
                         .clickable { /*TODO*/ }
                 )
-
+                Text(text = message.senderInfo.nickname)
             }
-            Text(text = message.senderInfo.nickname)
         }
         Box(
             modifier = Modifier
