@@ -8,7 +8,7 @@
     <string name="login_username">用户名</string>
     <string name="login_password">密码</string>
     <string name="login_failed">登录失败</string>
-    <string name="reflesh_token">token失效, 尝试重新获取</string>
+    <string name="refresh_token">token失效, 尝试重新获取</string>
     <string name="service_disabled">错误: 消息服务启动失败或者被禁用</string>
     <string name="logout">退出登录</string>
     <string name="unknown_user">未知用户</string>
@@ -16,4 +16,5 @@
     <string name="not_implemented">别急, 还没写好</string>
     <string name="unknown_group">未知群组</string>
     <string name="admin_user">管理员</string>
+    <string name="profile">用户档案</string>
 </resources>

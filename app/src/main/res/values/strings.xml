@@ -10,7 +10,7 @@
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
     <string name="login_failed">Login Failed</string>
-    <string name="reflesh_token">Refleshing account</string>
+    <string name="refresh_token">Refreshing account</string>
     <string name="service_disabled">Please DO NOT disable Messaging Service</string>
     <string name="logout">Logout</string>
     <string name="default_channel_id" translatable="false">default_channel</string>
@@ -21,5 +21,6 @@
     <string name="title_activity_group_details" translatable="false">GroupDetailsActivity</string>
     <string name="unknown_group">Unknown Group</string>
     <string name="admin_user">ADMIN</string>
-    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_profile" translatable="false">ProfileActivity</string>
+    <string name="profile">Profile</string>
 </resources>

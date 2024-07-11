@@ -8,6 +8,7 @@ import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -26,6 +27,8 @@ const val HTTP_PROTOCOL = "https://"
 const val WS_PROTOCOL = "wss://"
 const val BACKEND = "backend.lunarclient.top"
 
+val X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded".toMediaType()
+
 fun login(username: String, password: String): Authorize? {
     val body =
         "username=$username&password=$password".toRequestBody("application/x-www-form-urlencoded".toMediaType())
@@ -43,7 +46,7 @@ fun login(username: String, password: String): Authorize? {
     }
 }
 
-private inline fun <reified T> String.invokeAPI(
+private inline fun <reified T> String.getAPI(
     api: String,
     crossinline onSuccess: (call: Call, response: RestBean<T>) -> Unit
 ) {
@@ -51,7 +54,7 @@ private inline fun <reified T> String.invokeAPI(
         .url("$HTTP_PROTOCOL$BACKEND$api")
         .get()
         .apply {
-            if (this@invokeAPI.isNotEmpty())
+            if (this@getAPI.isNotEmpty())
                 this.header("Authorization", "Bearer $this")
         }
         .build()
@@ -68,7 +71,7 @@ private inline fun <reified T> String.invokeAPI(
     })
 }
 
-private inline fun <reified T> String.invokeAPI(api: String): T? {
+private inline fun <reified T> String.getAPI(api: String): T? {
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND$api")
         .get()
@@ -81,33 +84,77 @@ private inline fun <reified T> String.invokeAPI(api: String): T? {
     }
 }
 
+private inline fun <reified T> String.postAPI(
+    api: String, body: RequestBody,
+    crossinline onSuccess: (call: Call, response: RestBean<T>) -> Unit
+) {
+    val request = Request.Builder()
+        .url("$HTTP_PROTOCOL$BACKEND$api")
+        .post(body)
+        .apply {
+            if (this@postAPI.isNotEmpty())
+                this.header("Authorization", "Bearer $this")
+        }
+        .build()
+    httpClient.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.e(TAG, e.stackTraceToString())
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            val response1 = JSON.decodeFromString<RestBean<T>>(response.body!!.string())
+            onSuccess(call, response1)
+        }
+
+    })
+}
+
 // String: token
 fun String.getGroups(onSuccess: (List<Group>) -> Unit) =
-    this.invokeAPI("/user/groups/list") { _, response ->
+    this.getAPI("/user/groups/list") { _, response ->
         onSuccess(response.data!!)
     }
 
 fun String.getFriends(onSuccess: (List<Friend>) -> Unit) {
-    this.invokeAPI("/user/friends/list") { _, response ->
+    this.getAPI("/user/friends/list") { _, response ->
         onSuccess(response.data)
     }
 }
 
 fun String.account(onSuccess: (Account) -> Unit) {
-    this.invokeAPI("/user/account") { _, response ->
+    this.getAPI("/user/account") { _, response ->
         onSuccess(response.data)
     }
 }
 
-fun String.getGroups(): List<Group>? = this.invokeAPI("/user/groups/list")
+fun String.getGroups(): List<Group>? = this.getAPI("/user/groups/list")
 
-fun String.getFriends(): List<Friend>? = this.invokeAPI("/user/friends/list")
+fun String.getFriends(): List<Friend>? = this.getAPI("/user/friends/list")
 
-fun String.account(): Account? = this.invokeAPI("/user/account")
+fun String.account(): Account? = this.getAPI("/user/account")
+
+fun String.changeUsername(newName: String, onSuccess: (Account) -> Unit) {
+    this.postAPI("/user/account/username", "value=$newName".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.changePassword(newPassword: String, onSuccess: (Account) -> Unit) {
+    this.postAPI("/user/account/password", "value=$newPassword".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.changeBio(newBio: String, onSuccess: (Account) -> Unit) {
+    this.postAPI("/user/account/bio", "value=$newBio".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
 
 
 fun String.updateFCMToken(fcmToken: String) {
-    val body = "newToken=$fcmToken".toRequestBody("application/x-www-form-urlencoded".toMediaType())
+
+    val body = "newToken=$fcmToken".toRequestBody(X_WWW_FORM_URLENCODED)
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND/user/fcm/token")
         .header("Authorization", this)
@@ -151,13 +198,13 @@ fun Int.account(): Account? {
 }
 
 fun Int.account(token: String = "", onSuccess: (Account) -> Unit) {
-    token.invokeAPI("/user/query/id/$this") { _, response ->
+    token.getAPI("/user/query/id/$this") { _, response ->
         onSuccess(response.data)
     }
 }
 
 fun Int.group(token: String = "", onSuccess: (Group) -> Unit) {
-    token.invokeAPI("/group/query/id/$this") { _, response ->
+    token.getAPI("/group/query/id/$this") { _, response ->
         onSuccess(response.data)
     }
 }

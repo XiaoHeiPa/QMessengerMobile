@@ -10,14 +10,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.ContactsContract.Profile
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,8 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -51,7 +47,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -170,7 +165,7 @@ class MainActivity : ComponentActivity() {
                 if (Date().time >= authorize.expire) {
                     Toast.makeText(
                         mContext,
-                        R.string.reflesh_token.translate(application),
+                        R.string.refresh_token.translate(application),
                         Toast.LENGTH_LONG
                     ).show()
                     Thread {
@@ -232,14 +227,15 @@ class MainActivity : ComponentActivity() {
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
-                        ModalDrawerSheet(modifier = Modifier.clickable {
-                            startActivity(Intent(baseContext, ProfileActivity::class.java)
-                                .apply {
-                                    putExtra("authorize", authorize.bundle())
-                                    putExtra("account", account.bundle())
-                                })
-                        }) {
-                            Row(modifier = Modifier.padding(5.dp)) {
+                        ModalDrawerSheet {
+                            Row(modifier = Modifier.padding(5.dp)
+                                .clickable {
+                                    startActivity(Intent(baseContext, ProfileActivity::class.java)
+                                        .apply {
+                                            putExtra("authorize", authorize.bundle())
+                                            putExtra("account", account.bundle())
+                                        })
+                                }) {
                                 SubcomposeAsyncImage(
                                     model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
                                     loading = {
