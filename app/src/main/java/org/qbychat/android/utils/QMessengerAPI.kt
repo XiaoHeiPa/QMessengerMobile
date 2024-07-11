@@ -151,13 +151,13 @@ fun Int.account(): Account? {
 }
 
 fun Int.account(token: String = "", onSuccess: (Account) -> Unit) {
-    token.invokeAPI("/user/query?id=$this") { _, response ->
+    token.invokeAPI("/user/query/id/$this") { _, response ->
         onSuccess(response.data)
     }
 }
 
 fun Int.group(token: String = "", onSuccess: (Group) -> Unit) {
-    token.invokeAPI("/group/query?id=$this") { _, response ->
+    token.invokeAPI("/group/query/id/$this") { _, response ->
         onSuccess(response.data)
     }
 }
