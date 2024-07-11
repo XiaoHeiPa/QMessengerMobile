@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.ContactsContract.Profile
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -231,7 +232,13 @@ class MainActivity : ComponentActivity() {
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
-                        ModalDrawerSheet {
+                        ModalDrawerSheet(modifier = Modifier.clickable {
+                            startActivity(Intent(baseContext, ProfileActivity::class.java)
+                                .apply {
+                                    putExtra("authorize", authorize.bundle())
+                                    putExtra("account", account.bundle())
+                                })
+                        }) {
                             Row(modifier = Modifier.padding(5.dp)) {
                                 SubcomposeAsyncImage(
                                     model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
@@ -246,7 +253,6 @@ class MainActivity : ComponentActivity() {
 
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(text = account.nickname)
-//                                    Spacer(modifier = Modifier.height(5.dp))
                                     Text(
                                         text = account.email,
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)

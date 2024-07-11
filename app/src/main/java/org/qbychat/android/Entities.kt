@@ -44,7 +44,7 @@ data class Authorize(
     var expire: Long,
 
     var password: String? = null // for renew token
-)
+): java.io.Serializable
 
 @Serializable
 data class Friend(
