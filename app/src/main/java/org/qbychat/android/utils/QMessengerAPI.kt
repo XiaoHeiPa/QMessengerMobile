@@ -156,6 +156,12 @@ fun Int.account(token: String, onSuccess: (Account) -> Unit) {
     }
 }
 
+fun Int.group(token: String, onSuccess: (Group) -> Unit) {
+    token.invokeAPI("/group/query?id=$this") { _, response ->
+        onSuccess(response.data)
+    }
+}
+
 // WS
 fun String.connect(
     onWSClosed: () -> Unit = {},
