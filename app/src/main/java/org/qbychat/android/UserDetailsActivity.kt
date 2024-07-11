@@ -101,13 +101,13 @@ class UserDetailsActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        Details(id = id, nickname = nickname, extra = email)
+                        UserDetails(id = id, nickname = nickname, extra = email)
                     }
                 }
                 if (user == null) {
                     val targetId = intent.getIntExtra("id", -1)
-                    val token = intent.getStringExtra("token")
-                    targetId.account(token!!) { account ->
+//                    val token = intent.getStringExtra("token")
+                    targetId.account { account ->
                         id = account.id
                         username = account.username
                         nickname = account.nickname
@@ -125,7 +125,7 @@ class UserDetailsActivity : ComponentActivity() {
 }
 
 @Composable
-fun Details(id: Int, nickname: String, extra: String) {
+fun UserDetails(id: Int, nickname: String, extra: String) {
     Row(modifier = Modifier.padding(10.dp)) {
         SubcomposeAsyncImage(
             model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${id}&isUser=1",

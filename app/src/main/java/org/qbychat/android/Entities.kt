@@ -28,7 +28,11 @@ data class Account(
     val role: Role = Role.USER,
     val registerTime: Long,
     val nickname: String,
-): java.io.Serializable
+): java.io.Serializable {
+    companion object {
+        val UNKNOWN = Account(-1, "user_unknown", "unknown@lunarclient.top", registerTime = -1, nickname = "Unknown")
+    }
+}
 
 @Serializable
 data class Authorize(
@@ -87,7 +91,7 @@ data class Message(
     val directMessage: Boolean,
     val timestamp: Long = 0, // auto generated
     val content: MessageContent,
-    val senderInfo: Account = Account(-1, "UNKNOWN", "unknown@lunarclient.top", registerTime = -1, nickname = "UNKNOWN USER")
+    val senderInfo: Account = Account.UNKNOWN
 ): java.io.Serializable {
 
 
@@ -110,7 +114,7 @@ data class Group(
     val owner: Int,
     val name: String,
     val shownName: String,
-    val description: String?,
+    val description: String = "Default description",
     val createTime: Long,
     val members: Set<Int>,
 )

@@ -150,8 +150,8 @@ fun Int.account(): Account? {
     return account
 }
 
-fun Int.account(token: String, onSuccess: (Account) -> Unit) {
-    token.invokeAPI("/user/query?id=$this") { _, response ->
+fun Int.account(onSuccess: (Account) -> Unit) {
+    "".invokeAPI("/user/query?id=$this") { _, response ->
         onSuccess(response.data)
     }
 }
