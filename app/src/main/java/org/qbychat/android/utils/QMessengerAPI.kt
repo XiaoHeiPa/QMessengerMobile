@@ -16,7 +16,6 @@ import org.qbychat.android.Account
 import org.qbychat.android.Authorize
 import org.qbychat.android.Friend
 import org.qbychat.android.Group
-import org.qbychat.android.MessengerResponse
 import org.qbychat.android.RestBean
 import java.io.IOException
 
@@ -28,7 +27,8 @@ const val WS_PROTOCOL = "wss://"
 const val BACKEND = "backend.lunarclient.top"
 
 fun login(username: String, password: String): Authorize? {
-    val body = "username=$username&password=$password".toRequestBody("application/x-www-form-urlencoded".toMediaType())
+    val body =
+        "username=$username&password=$password".toRequestBody("application/x-www-form-urlencoded".toMediaType())
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND/user/login")
         .post(body)
@@ -43,13 +43,19 @@ fun login(username: String, password: String): Authorize? {
     }
 }
 
-private inline fun <reified T> String.invokeAPI(api: String, crossinline onSuccess: (call: Call, response: RestBean<T>) -> Unit) {
+private inline fun <reified T> String.invokeAPI(
+    api: String,
+    crossinline onSuccess: (call: Call, response: RestBean<T>) -> Unit
+) {
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND$api")
         .get()
-        .header("Authorization", "Bearer $this")
+        .apply {
+            if (this@invokeAPI.isNotEmpty())
+                this.header("Authorization", "Bearer $this")
+        }
         .build()
-    httpClient.newCall(request).enqueue(object: Callback {
+    httpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             Log.e(TAG, e.stackTraceToString())
         }
@@ -76,9 +82,10 @@ private inline fun <reified T> String.invokeAPI(api: String): T? {
 }
 
 // String: token
-fun String.getGroups(onSuccess: (List<Group>) -> Unit) = this.invokeAPI("/user/groups/list") { _, response ->
-    onSuccess(response.data!!)
-}
+fun String.getGroups(onSuccess: (List<Group>) -> Unit) =
+    this.invokeAPI("/user/groups/list") { _, response ->
+        onSuccess(response.data!!)
+    }
 
 fun String.getFriends(onSuccess: (List<Friend>) -> Unit) {
     this.invokeAPI("/user/friends/list") { _, response ->
@@ -94,7 +101,7 @@ fun String.account(onSuccess: (Account) -> Unit) {
 
 fun String.getGroups(): List<Group>? = this.invokeAPI("/user/groups/list")
 
-fun String.getFriends(): List<Friend>?  = this.invokeAPI("/user/friends/list")
+fun String.getFriends(): List<Friend>? = this.invokeAPI("/user/friends/list")
 
 fun String.account(): Account? = this.invokeAPI("/user/account")
 
@@ -106,7 +113,7 @@ fun String.updateFCMToken(fcmToken: String) {
         .header("Authorization", this)
         .post(body)
         .build()
-    httpClient.newCall(request).enqueue(object: Callback {
+    httpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             Log.e(TAG, e.stackTraceToString())
         }
@@ -126,25 +133,34 @@ fun saveAuthorize(mContext: Context, authorize: Authorize) {
 // Int: userId
 private val accountMap = mutableMapOf<Int, Account>()
 
-val Int.account: Account?
-    get() {
-        if (accountMap.containsKey(this)) return accountMap[this]
+fun Int.account(): Account? {
+    if (accountMap.containsKey(this)) return accountMap[this]
 
-        val request = Request.Builder()
-            .url("$HTTP_PROTOCOL$BACKEND$/user/query?id=$this")
-            .get()
-            .build()
-        with(httpClient.newCall(request).execute()) {
-            if (this.body == null) return null // unreachable
-            val response = JSON.decodeFromString<RestBean<Account>>(this.body!!.string())
-            val account = response.data
-            accountMap[this@account] = account
-            return account
-        }
+    val request = Request.Builder()
+        .url("$HTTP_PROTOCOL$BACKEND$/user/query?id=$this")
+        .get()
+        .build()
+    var account: Account?
+    with(httpClient.newCall(request).execute()) {
+        if (this.body == null) account = null // unreachable
+        val response = JSON.decodeFromString<RestBean<Account>>(this.body!!.string())
+        account = response.data
+        accountMap[this@account] = account!!
     }
+    return account
+}
+
+fun Int.account(token: String, onSuccess: (Account) -> Unit) {
+    token.invokeAPI("/user/query?id=$this") { _, response ->
+        onSuccess(response.data)
+    }
+}
 
 // WS
-fun String.connect(onWSClosed: () -> Unit = {}, onMessageReceived: (websocket: WebSocket, response: String) -> Unit): WebSocket {
+fun String.connect(
+    onWSClosed: () -> Unit = {},
+    onMessageReceived: (websocket: WebSocket, response: String) -> Unit
+): WebSocket {
     val request: Request = Request.Builder()
         .url("$WS_PROTOCOL$BACKEND/ws/messenger")
         .header("Authorization", "Bearer $this")
@@ -158,7 +174,7 @@ fun String.connect(onWSClosed: () -> Unit = {}, onMessageReceived: (websocket: W
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
-            Log.i("Websocket" ,"Received message: $text")
+            Log.i("Websocket", "Received message: $text")
             onMessageReceived(webSocket, text)
         }
 

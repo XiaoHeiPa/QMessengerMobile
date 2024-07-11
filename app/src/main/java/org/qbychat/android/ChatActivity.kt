@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,7 +41,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,6 +61,8 @@ import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
+import org.qbychat.android.utils.account
+import org.qbychat.android.utils.bundle
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -98,6 +99,7 @@ class ChatActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
+        val token = intent.getStringExtra("token")
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(RECEIVED_MESSAGE)
@@ -108,7 +110,6 @@ class ChatActivity : ComponentActivity() {
         }
         setContent {
             QMessengerMobileTheme {
-                val mContext = LocalContext.current
                 val messages = remember {
                     mutableStateListOf<Message>()
                 }
@@ -132,7 +133,30 @@ class ChatActivity : ComponentActivity() {
                                 titleContentColor = MaterialTheme.colorScheme.primary
                             ),
                             title = {
-                                Text(text = channel.shownName)
+                                Text(
+                                    text = channel.shownName,
+                                    modifier = Modifier.clickable {
+                                        if (channel.directMessage) {
+                                            startActivity(
+                                                Intent(
+                                                    baseContext,
+                                                    UserDetailsActivity::class.java
+                                                ).apply {
+                                                    putExtra(
+                                                        "id",
+                                                        channel.id
+                                                    )
+                                                    putExtra("token", token)
+                                                })
+                                        } else {
+                                            Toast.makeText(
+                                                baseContext,
+                                                R.string.not_implemented,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                )
                             },
                             navigationIcon = {
                                 IconButton(onClick = { this@ChatActivity.finish() }) {
@@ -192,47 +216,56 @@ class ChatActivity : ComponentActivity() {
         unregisterReceiver(messageReceiver)
         super.onDestroy()
     }
-}
 
-@Composable
-fun ChatMessage(message: Message, isFromMe: Boolean, lastSender: Int? = null) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-    ) {
-        Row {
-            if (!message.directMessage && !isFromMe && lastSender != message.sender) {
-                AsyncImage(
-                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
-                    contentDescription = "avatar",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(30.dp)
-                        .clickable { /*TODO*/ }
-                )
-                Text(text = message.senderInfo.nickname)
-            }
-        }
-        Box(
+    @Composable
+    fun ChatMessage(message: Message, isFromMe: Boolean, lastSender: Int? = null) {
+        Column(
             modifier = Modifier
-                .align(if (isFromMe) Alignment.End else Alignment.Start)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 48f,
-                        topEnd = 48f,
-                        bottomStart = if (isFromMe) 48f else 0f,
-                        bottomEnd = if (isFromMe) 0f else 48f
-                    )
-                )
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(16.dp)
+                .fillMaxWidth()
+                .padding(4.dp)
         ) {
-            Text(text = message.content.text, color = MaterialTheme.colorScheme.onPrimary)
-        }
+            Row {
+                if (!message.directMessage && !isFromMe && lastSender != message.sender) {
+                    AsyncImage(
+                        model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
+                        contentDescription = "avatar",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(30.dp)
+                            .clickable {
+                                startActivity(
+                                    Intent(
+                                        baseContext,
+                                        UserDetailsActivity::class.java
+                                    ).apply {
+                                        putExtra("info", message.senderInfo.bundle())
+                                    })
+                            }
+                    )
+                    Text(text = message.senderInfo.nickname)
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .align(if (isFromMe) Alignment.End else Alignment.Start)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 48f,
+                            topEnd = 48f,
+                            bottomStart = if (isFromMe) 48f else 0f,
+                            bottomEnd = if (isFromMe) 0f else 48f
+                        )
+                    )
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp)
+            ) {
+                Text(text = message.content.text, color = MaterialTheme.colorScheme.onPrimary)
+            }
 
+        }
     }
 }
+
 
 @Composable
 fun ChatBox(modifier: Modifier = Modifier, onSendMessageClicked: (String) -> Unit) {

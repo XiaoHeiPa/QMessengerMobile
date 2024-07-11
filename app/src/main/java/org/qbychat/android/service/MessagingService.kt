@@ -98,7 +98,7 @@ class MessagingService : Service() {
 
     override fun onDestroy() {
         websocket?.close(200, null)
-        websocket = null;
+        websocket = null
         super.onDestroy()
     }
 }

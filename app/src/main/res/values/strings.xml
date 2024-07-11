@@ -15,4 +15,7 @@
     <string name="logout">Logout</string>
     <string name="default_channel_id" translatable="false">default_channel</string>
     <string name="unknown_user">Unknown User</string>
+    <string name="title_activity_user" translatable="false">UserDetailsActivity</string>
+    <string name="beta_msg">Powered by QMessenger</string>
+    <string name="not_implemented">Not implemented</string>
 </resources>

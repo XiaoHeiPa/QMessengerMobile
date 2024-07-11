@@ -73,7 +73,6 @@ import org.qbychat.android.utils.bundle
 import org.qbychat.android.utils.createNotificationChannel
 import org.qbychat.android.utils.getFriends
 import org.qbychat.android.utils.getGroups
-import org.qbychat.android.utils.isAppInForeground
 import org.qbychat.android.utils.login
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
@@ -324,6 +323,7 @@ class MainActivity : ComponentActivity() {
                                                 val p0 = Intent(mContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
                                                 p0.putExtra("account", account.bundle())
+                                                p0.putExtra("token", authorize.token)
                                                 mContext.startActivity(p0)
                                             }
                                     ) {

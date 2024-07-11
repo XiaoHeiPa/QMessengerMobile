@@ -12,4 +12,6 @@
     <string name="service_disabled">错误: 消息服务启动失败或者被禁用</string>
     <string name="logout">退出登录</string>
     <string name="unknown_user">未知用户</string>
+    <string name="beta_msg">由QMessenger提供驱动</string>
+    <string name="not_implemented">别急, 还没写好</string>
 </resources>
