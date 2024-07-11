@@ -15,4 +15,5 @@
     <string name="beta_msg">由QMessenger提供驱动</string>
     <string name="not_implemented">别急, 还没写好</string>
     <string name="unknown_group">未知群组</string>
+    <string name="admin_user">管理员</string>
 </resources>

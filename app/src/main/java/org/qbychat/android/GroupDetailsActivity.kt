@@ -85,18 +85,6 @@ class GroupDetailsActivity : ComponentActivity() {
                                 )
                             }
                         })
-                    },
-                    bottomBar = {
-                        Box(
-                            modifier = Modifier
-                                .navigationBarsPadding()
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = R.string.beta_msg.translate(application),
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
                     }
                 ) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {

@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
@@ -51,23 +52,14 @@ class UserDetailsActivity : ComponentActivity() {
 
         val bundleExtra = intent.getBundleExtra("info")
         val user = if (bundleExtra == null) {
-            null
+            Account.UNKNOWN
         } else {
             (bundleExtra.getSerializable("object")) as Account
         }
         setContent {
             QMessengerMobileTheme {
-                var username by remember {
-                    mutableStateOf("user_unknown")
-                }
-                var nickname by remember {
-                    mutableStateOf(R.string.unknown_user.translate(application))
-                }
-                var email by remember {
-                    mutableStateOf("unknown@lunarclient.top")
-                }
-                var id by remember {
-                    mutableIntStateOf(-1)
+                var account by remember {
+                    mutableStateOf(user)
                 }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -76,7 +68,7 @@ class UserDetailsActivity : ComponentActivity() {
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             titleContentColor = MaterialTheme.colorScheme.primary
                         ), title = {
-                            Text(text = nickname)
+                            Text(text = account.nickname)
                         }, navigationIcon = {
                             IconButton(onClick = { this@UserDetailsActivity.finish() }) {
                                 Icon(
@@ -85,67 +77,53 @@ class UserDetailsActivity : ComponentActivity() {
                                 )
                             }
                         })
-                    },
-                    bottomBar = {
-                        Box(
-                            modifier = Modifier
-                                .navigationBarsPadding()
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = R.string.beta_msg.translate(application),
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                    }) { innerPadding ->
+                    }
+                ) { innerPadding ->
                     Column(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        UserDetails(id = id, nickname = nickname, extra = email)
+                        UserDetails(account)
                     }
                 }
-                if (user == null) {
+                if (user == Account.UNKNOWN) {
                     val targetId = intent.getIntExtra("id", -1)
                     val token = intent.getStringExtra("token")!!
-                    targetId.account(token) { account ->
-                        id = account.id
-                        username = account.username
-                        nickname = account.nickname
-                        email = account.email
+                    targetId.account(token) { account1 ->
+                       account = account1
                     }
-                } else {
-                    id = user.id
-                    username = user.username
-                    nickname = user.nickname
-                    email = user.email
+                }
+            }
+        }
+    }
+
+
+    @Composable
+    fun UserDetails(account: Account) {
+        Row(modifier = Modifier.padding(10.dp)) {
+            SubcomposeAsyncImage(
+                model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
+                loading = {
+                    CircularProgressIndicator()
+                },
+                contentDescription = "avatar",
+                modifier = Modifier
+                    .size(65.dp)
+                    .clip(CircleShape)
+            )
+            Column(modifier = Modifier.padding(horizontal = 5.dp)) {
+                Text(
+                    text = account.nickname,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(text = account.bio, style = MaterialTheme.typography.bodyMedium)
+                if (account.role == Role.ADMIN) {
+                    Text(text = R.string.admin_user.translate(application), color = Color.Red)
                 }
             }
         }
     }
 }
 
-@Composable
-fun UserDetails(id: Int, nickname: String, extra: String) {
-    Row(modifier = Modifier.padding(10.dp)) {
-        SubcomposeAsyncImage(
-            model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${id}&isUser=1",
-            loading = {
-                CircularProgressIndicator()
-            },
-            contentDescription = "avatar",
-            modifier = Modifier
-                .size(65.dp)
-                .clip(CircleShape)
-        )
-        Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-            Text(
-                text = nickname,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(text = extra, style = MaterialTheme.typography.bodyMedium)
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

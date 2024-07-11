@@ -25,6 +25,7 @@ data class Account(
     val id: Int,
     val username: String,
     val email: String,
+    val bio: String = "-",
     val role: Role = Role.USER,
     val registerTime: Long,
     val nickname: String,

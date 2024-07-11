@@ -18,6 +18,7 @@
     <string name="title_activity_user" translatable="false">UserDetailsActivity</string>
     <string name="beta_msg">Powered by QMessenger</string>
     <string name="not_implemented">Not implemented</string>
-    <string name="title_activity_group_detauks">GroupDetauksActivity</string>
+    <string name="title_activity_group_details" translatable="false">GroupDetailsActivity</string>
     <string name="unknown_group">Unknown Group</string>
+    <string name="admin_user">ADMIN</string>
 </resources>

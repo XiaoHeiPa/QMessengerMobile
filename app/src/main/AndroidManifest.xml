@@ -19,7 +19,7 @@
         <activity
                 android:name=".GroupDetailsActivity"
                 android:exported="false"
-                android:label="@string/title_activity_group_detauks"
+                android:label="@string/title_activity_group_details"
                 android:theme="@style/Theme.QMessengerMobile" />
         <activity
                 android:name=".UserDetailsActivity"

@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     accountJson.delete()
                                     accountInfoJson.delete()
-                                    stopService(Intent(mContext, MessagingService::class.java))
+                                    unbindService(connection)
                                     doLogin(mContext)
                                 }
                             )
