@@ -147,13 +147,21 @@ class ChatActivity : ComponentActivity() {
                                                         channel.id
                                                     )
                                                     putExtra("token", token)
-                                                })
+                                                }
+                                            )
                                         } else {
-                                            Toast.makeText(
-                                                baseContext,
-                                                R.string.not_implemented,
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            startActivity(
+                                                Intent(
+                                                    baseContext,
+                                                    GroupDetailsActivity::class.java
+                                                ).apply {
+                                                    putExtra(
+                                                        "id",
+                                                        channel.id
+                                                    )
+                                                    putExtra("token", token)
+                                                }
+                                            )
                                         }
                                     }
                                 )

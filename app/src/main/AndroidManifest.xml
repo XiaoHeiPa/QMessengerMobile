@@ -17,6 +17,11 @@
             android:theme="@style/Theme.QMessengerMobile"
             tools:targetApi="S">
         <activity
+                android:name=".GroupDetailsActivity"
+                android:exported="false"
+                android:label="@string/title_activity_group_detauks"
+                android:theme="@style/Theme.QMessengerMobile" />
+        <activity
                 android:name=".UserDetailsActivity"
                 android:exported="false"
                 android:label="@string/title_activity_user"
