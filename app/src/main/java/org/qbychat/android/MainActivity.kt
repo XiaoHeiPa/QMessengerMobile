@@ -303,12 +303,10 @@ class MainActivity : ComponentActivity() {
                             AddContactButton()
                         },
                         content = { innerPadding ->
-                            val scrollState = rememberScrollState()
                             LazyColumn(
                                 modifier = Modifier
                                     .padding(innerPadding)
                                     .fillMaxWidth()
-                                    .horizontalScroll(scrollState)
                             ) {
                                 items(
                                     items = channels,
@@ -319,6 +317,7 @@ class MainActivity : ComponentActivity() {
                                     Row(
                                         modifier = Modifier
                                             .padding(10.dp)
+                                            .fillMaxWidth()
                                             .clickable {
                                                 val p0 = Intent(mContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
@@ -337,7 +336,7 @@ class MainActivity : ComponentActivity() {
                                                 .size(50.dp)
                                                 .clip(CircleShape)
                                         )
-                                        Column(modifier = Modifier.fillMaxWidth()) {
+                                        Column {
                                             Text(
                                                 text = channel.shownName
                                             )

@@ -99,7 +99,7 @@ class ChatActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
-        val token = intent.getStringExtra("token")
+        val token = intent.getStringExtra("token")!!
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(RECEIVED_MESSAGE)
