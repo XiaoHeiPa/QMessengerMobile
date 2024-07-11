@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,6 +41,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -198,7 +200,9 @@ class ChatActivity : ComponentActivity() {
 
                 ) { innerPadding ->
                     var lastSender = -1
+                    val listState = rememberLazyListState()
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         items(
@@ -214,6 +218,11 @@ class ChatActivity : ComponentActivity() {
                             )
                             lastSender = message.sender!!
                         }
+                    }
+
+                    LaunchedEffect(messages.size) {
+                        if (messages.size == 0) return@LaunchedEffect
+                        listState.scrollToItem(messages.size - 1)
                     }
                 }
             }
