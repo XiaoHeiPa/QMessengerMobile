@@ -99,7 +99,7 @@ class GroupDetailsActivity : ComponentActivity() {
                 OwnerDetails(owner)
             }
         }
-        ownerId.account { account ->
+        ownerId.account(token) { account ->
             owner = account
         }
     }

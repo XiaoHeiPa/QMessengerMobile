@@ -106,8 +106,8 @@ class UserDetailsActivity : ComponentActivity() {
                 }
                 if (user == null) {
                     val targetId = intent.getIntExtra("id", -1)
-//                    val token = intent.getStringExtra("token")
-                    targetId.account { account ->
+                    val token = intent.getStringExtra("token")!!
+                    targetId.account(token) { account ->
                         id = account.id
                         username = account.username
                         nickname = account.nickname
