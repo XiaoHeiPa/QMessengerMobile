@@ -15,6 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -117,7 +121,19 @@ class UserDetailsActivity : ComponentActivity() {
                 )
                 Text(text = account.bio, style = MaterialTheme.typography.bodyMedium)
                 if (account.role == Role.ADMIN) {
-                    Text(text = R.string.admin_user.translate(application), color = Color.Red)
+                    AssistChip(
+                        label = {
+                            Text(text = R.string.admin_user.translate(application), color = Color.Red)
+                        },
+                        onClick = {},
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Settings,
+                                contentDescription = "admin",
+                                Modifier.size(AssistChipDefaults.IconSize)
+                            )
+                        }
+                    )
                 }
             }
         }

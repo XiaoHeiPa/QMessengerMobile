@@ -18,8 +18,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
@@ -112,6 +115,7 @@ class ChatActivity : ComponentActivity() {
         } else {
             registerReceiver(messageReceiver, intentFilter)
         }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             QMessengerMobileTheme {
                 val messages = remember {
@@ -128,8 +132,6 @@ class ChatActivity : ComponentActivity() {
                     )
                 }.start()
                 Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize(),
                     topBar = {
                         TopAppBar(
                             colors = TopAppBarDefaults.topAppBarColors(
@@ -218,7 +220,9 @@ class ChatActivity : ComponentActivity() {
                     val listState = rememberLazyListState()
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier.padding(innerPadding)
+                        contentPadding = innerPadding,
+                        modifier = Modifier
+                            .consumeWindowInsets(innerPadding)
                     ) {
                         items(
                             items = messages,

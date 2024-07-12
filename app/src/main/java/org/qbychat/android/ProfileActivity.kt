@@ -8,11 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,7 +43,8 @@ class ProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val account = intent.getBundleExtra("account")!!.getSerializable("object")!! as Account
-        val authorize = intent.getBundleExtra("authorize")!!.getSerializable("object")!! as Authorize
+        val authorize =
+            intent.getBundleExtra("authorize")!!.getSerializable("object")!! as Authorize
         setContent {
             QMessengerMobileTheme {
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
@@ -64,6 +68,22 @@ class ProfileActivity : ComponentActivity() {
                 }) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
                         Profile(account = account)
+                        Card(
+                            modifier = Modifier
+                                .height(60.dp)
+                                .fillMaxWidth()
+                                .clickable {
+
+                                }
+                        ) {
+                            Text(text = account.bio, style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                text = R.string.change_bio.translate(application),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                        }
+
                     }
                 }
             }
@@ -91,7 +111,6 @@ class ProfileActivity : ComponentActivity() {
                     text = account.nickname,
                     style = MaterialTheme.typography.titleLarge
                 )
-                Text(text = account.bio, style = MaterialTheme.typography.bodyMedium)
                 if (account.role == Role.ADMIN) {
                     Text(text = R.string.admin_user.translate(application), color = Color.Red)
                 }

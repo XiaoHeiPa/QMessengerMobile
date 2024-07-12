@@ -23,4 +23,5 @@
     <string name="admin_user">ADMIN</string>
     <string name="title_activity_profile" translatable="false">ProfileActivity</string>
     <string name="profile">Profile</string>
+    <string name="change_bio">Tap to change your bio</string>
 </resources>
