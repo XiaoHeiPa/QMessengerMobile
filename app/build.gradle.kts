@@ -55,6 +55,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.image.viewer)
+    implementation(libs.sampling.decoder)
+
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.work.rxjava2)
     implementation(libs.androidx.work.gcm)

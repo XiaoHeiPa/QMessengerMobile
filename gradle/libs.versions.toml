@@ -4,6 +4,7 @@ coil = "2.6.0"
 firebaseAnalytics = "22.0.2"
 firebaseBom = "33.1.1"
 firebaseMessaging = "24.0.0"
+imageViewer = "1.1.0-alpha.4"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -28,6 +29,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+image-viewer = { module = "com.jvziyaoyao.scale:image-viewer", version.ref = "imageViewer" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -44,6 +46,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp" }
+sampling-decoder = { module = "com.jvziyaoyao.scale:sampling-decoder", version.ref = "imageViewer" }
 squareup-okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "squareupOkhttpBom" }
 
 [plugins]
