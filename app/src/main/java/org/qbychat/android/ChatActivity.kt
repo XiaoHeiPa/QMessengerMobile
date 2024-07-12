@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import org.qbychat.android.RequestType.Companion.SEND_MESSAGE
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.service.RECEIVED_MESSAGE
@@ -135,38 +137,51 @@ class ChatActivity : ComponentActivity() {
                                 titleContentColor = MaterialTheme.colorScheme.primary
                             ),
                             title = {
-                                Text(
-                                    text = channel.shownName,
-                                    modifier = Modifier.clickable {
-                                        if (channel.directMessage) {
-                                            startActivity(
-                                                Intent(
-                                                    baseContext,
-                                                    UserDetailsActivity::class.java
-                                                ).apply {
-                                                    putExtra(
-                                                        "id",
-                                                        channel.id
-                                                    )
-                                                    putExtra("token", token)
-                                                }
-                                            )
-                                        } else {
-                                            startActivity(
-                                                Intent(
-                                                    baseContext,
-                                                    GroupDetailsActivity::class.java
-                                                ).apply {
-                                                    putExtra(
-                                                        "id",
-                                                        channel.id
-                                                    )
-                                                    putExtra("token", token)
-                                                }
-                                            )
+                                Row {
+                                    SubcomposeAsyncImage(
+                                        model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${channel.id}&isUser=${if (channel.directMessage) 1 else 0}",
+                                        loading = {
+                                            CircularProgressIndicator()
+                                        },
+                                        contentDescription = "avatar",
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .clip(CircleShape)
+                                    )
+
+                                    Text(
+                                        text = channel.shownName,
+                                        modifier = Modifier.clickable {
+                                            if (channel.directMessage) {
+                                                startActivity(
+                                                    Intent(
+                                                        baseContext,
+                                                        UserDetailsActivity::class.java
+                                                    ).apply {
+                                                        putExtra(
+                                                            "id",
+                                                            channel.id
+                                                        )
+                                                        putExtra("token", token)
+                                                    }
+                                                )
+                                            } else {
+                                                startActivity(
+                                                    Intent(
+                                                        baseContext,
+                                                        GroupDetailsActivity::class.java
+                                                    ).apply {
+                                                        putExtra(
+                                                            "id",
+                                                            channel.id
+                                                        )
+                                                        putExtra("token", token)
+                                                    }
+                                                )
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             },
                             navigationIcon = {
                                 IconButton(onClick = { this@ChatActivity.finish() }) {
