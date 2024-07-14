@@ -256,16 +256,18 @@ class ChatActivity : ComponentActivity() {
         }.start()
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        if (!MainActivity.isServiceBound) bindService(
-            Intent(
-                baseContext,
-                MessagingService::class.java
-            ).apply { putExtra("token", authorize.token) },
-            MainActivity.connection,
-            Context.BIND_AUTO_CREATE
-        )
-        return super.dispatchTouchEvent(ev)
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && MainActivity.isServiceBound) {
+            bindService(
+                Intent(
+                    baseContext,
+                    MessagingService::class.java
+                ).apply { putExtra("token", authorize.token) },
+                MainActivity.connection,
+                Context.BIND_AUTO_CREATE
+            )
+        }
     }
 
     override fun onDestroy() {

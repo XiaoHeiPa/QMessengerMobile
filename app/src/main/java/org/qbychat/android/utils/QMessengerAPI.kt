@@ -3,7 +3,6 @@ package org.qbychat.android.utils
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.Composable
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -179,6 +178,23 @@ fun saveAuthorize(mContext: Context, authorize: Authorize) {
     mContext.filesDir.resolve("account.json").writeText(
         JSON.encodeToString(Authorize.serializer(), authorize)
     )
+}
+
+fun Authorize.refresh(baseContext: Context, passwordChanged: () -> Unit = {}) {
+    val authorize = login(this.username, this.password!!)
+    if (authorize == null) {
+        // password changed
+        passwordChanged()
+        return
+    }
+    authorize.password = this.password
+    // save
+    saveAuthorize(baseContext, authorize)
+    this.username = authorize.username
+    this.role = authorize.role
+    this.email = authorize.email
+    this.token = authorize.token
+    this.expire = authorize.expire
 }
 
 // Int: userId

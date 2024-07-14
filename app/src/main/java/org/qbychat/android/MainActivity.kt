@@ -76,6 +76,7 @@ import org.qbychat.android.utils.createNotificationChannel
 import org.qbychat.android.utils.getFriends
 import org.qbychat.android.utils.getGroups
 import org.qbychat.android.utils.login
+import org.qbychat.android.utils.refresh
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
@@ -170,16 +171,9 @@ class MainActivity : ComponentActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                     Thread {
-                        val authorize1 = login(authorize.username, authorize.password!!)
-                        if (authorize1 == null) {
-                            // password changed
+                        authorize.refresh(baseContext) {
                             doLogin()
-                            return@Thread
                         }
-                        authorize1.password = authorize.password
-                        authorize = authorize1
-                        // save
-                        saveAuthorize(baseContext, authorize1)
                     }.apply {
                         start()
                         join()
