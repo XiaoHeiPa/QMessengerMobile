@@ -4,18 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -30,11 +26,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -93,7 +87,7 @@ class UserDetailsActivity : ComponentActivity() {
                     val targetId = intent.getIntExtra("id", -1)
                     val token = intent.getStringExtra("token")!!
                     targetId.account(token) { account1 ->
-                       account = account1
+                        account = account1
                     }
                 }
             }
@@ -123,9 +117,12 @@ class UserDetailsActivity : ComponentActivity() {
                 if (account.role == Role.ADMIN) {
                     AssistChip(
                         label = {
-                            Text(text = R.string.admin_user.translate(application), color = Color.Red)
+                            Text(
+                                text = R.string.admin_user.translate(application),
+                                color = Color.Red
+                            )
                         },
-                        onClick = {},
+                        onClick = { },
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Settings,

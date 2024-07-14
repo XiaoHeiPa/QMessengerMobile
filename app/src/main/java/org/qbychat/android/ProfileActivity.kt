@@ -81,7 +81,7 @@ class ProfileActivity : ComponentActivity() {
                                 text = R.string.change_bio.translate(application),
                                 style = MaterialTheme.typography.bodyMedium
                             )
-
+                            // todo change bio
                         }
 
                     }

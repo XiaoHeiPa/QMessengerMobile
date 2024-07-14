@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -228,7 +229,8 @@ class MainActivity : ComponentActivity() {
                     drawerState = drawerState,
                     drawerContent = {
                         ModalDrawerSheet {
-                            Row(modifier = Modifier.padding(5.dp)
+                            Row(modifier = Modifier
+                                .padding(5.dp)
                                 .clickable {
                                     startActivity(Intent(baseContext, ProfileActivity::class.java)
                                         .apply {
@@ -256,6 +258,37 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             HorizontalDivider()
+                            if (account.role == Role.ADMIN) {
+                                NavigationDrawerItem(
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.admin_panel_settings),
+                                            contentDescription = "Admin Only"
+                                        )
+                                    },
+                                    label = { Text(text = R.string.admin.translate(mContext)) },
+                                    selected = false,
+                                    onClick = {
+                                        startActivity(Intent(baseContext, AdminActivity::class.java).apply {
+                                            putExtra("token", authorize.token)
+                                            putExtra("account", account.bundle())
+                                        })
+                                    }
+                                )
+                            }
+                            NavigationDrawerItem(
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Settings,
+                                        contentDescription = "Settings"
+                                    )
+                                },
+                                label = { Text(text = R.string.settings.translate(mContext)) },
+                                selected = false,
+                                onClick = {
+                                    // TODO
+                                }
+                            )
                             NavigationDrawerItem(
                                 icon = {
                                     Icon(

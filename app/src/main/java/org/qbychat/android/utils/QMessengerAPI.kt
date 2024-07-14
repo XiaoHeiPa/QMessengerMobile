@@ -3,6 +3,7 @@ package org.qbychat.android.utils
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.Composable
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,6 +18,7 @@ import org.qbychat.android.Account
 import org.qbychat.android.Authorize
 import org.qbychat.android.Friend
 import org.qbychat.android.Group
+import org.qbychat.android.Invitation
 import org.qbychat.android.RestBean
 import java.io.IOException
 
@@ -53,10 +55,7 @@ private inline fun <reified T> String.getAPI(
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND$api")
         .get()
-        .apply {
-            if (this@getAPI.isNotEmpty())
-                this.header("Authorization", "Bearer $this")
-        }
+        .header("Authorization", "Bearer $this")
         .build()
     httpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
@@ -151,6 +150,11 @@ fun String.changeBio(newBio: String, onSuccess: (Account) -> Unit) {
     }
 }
 
+fun String.generateInviteCode(onSuccess: (Invitation) -> Unit) {
+    this.getAPI("/admin/register/invite") { _, response ->
+        onSuccess(response.data)
+    }
+}
 
 fun String.updateFCMToken(fcmToken: String) {
 

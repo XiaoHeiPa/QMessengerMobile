@@ -88,7 +88,7 @@ class LoginActivity : ComponentActivity() {
                                 .clickable {
                                     val browserIntent = Intent(
                                         Intent.ACTION_VIEW,
-                                        Uri.parse("https://chat.lunarclient.top/register")
+                                        Uri.parse("https://chat.lunarclient.top/web/register")
                                     )
                                     startActivity(browserIntent)
                                 }

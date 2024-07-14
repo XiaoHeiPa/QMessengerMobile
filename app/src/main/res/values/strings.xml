@@ -6,7 +6,7 @@
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="login_title">Sign in QMessenger</string>
     <string name="login_button">Login</string>
-    <string name="register_tip">No account? Please do register at https://chat.lunarclient.top/register</string>
+    <string name="register_tip">No account? Click to register</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
     <string name="login_failed">Login Failed</string>
@@ -24,4 +24,14 @@
     <string name="title_activity_profile" translatable="false">ProfileActivity</string>
     <string name="profile">Profile</string>
     <string name="change_bio">Tap to change your bio</string>
+    <string name="title_activity_admin" translatable="false">AdminActivity</string>
+    <string name="settings">Settings</string>
+    <string name="admin">Admin</string>
+    <string name="non_admin_warning">You\'re not a ADMIN, please DO NOT open this page via Xposed or startActivity() :)</string>
+    <string name="gerenate_invite_code">生成邀请码</string>
+    <string name="admin_registation">Registation</string>
+    <string name="copy">Copy</string>
+    <string name="ok">OK</string>
+    <string name="templete_invite_code">Invite code: %s</string>
+    <string name="invitation">Invitation</string>
 </resources>

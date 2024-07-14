@@ -21,6 +21,13 @@ enum class Role {
 }
 
 @Serializable
+data class Invitation(
+    val code: String,
+    val adminId: Int,
+    val expire: Long,
+)
+
+@Serializable
 data class Account(
     val id: Int,
     val username: String,

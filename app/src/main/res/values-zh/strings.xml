@@ -4,7 +4,7 @@
     <string name="notification_channel_messages">聊天消息</string>
     <string name="login_title">登录到QMessenger</string>
     <string name="login_button">登录</string>
-    <string name="register_tip">没有账户? 请在https://chat.lunarclient.top/register进行注册</string>
+    <string name="register_tip">没有账户? 点击这里进行注册</string>
     <string name="login_username">用户名</string>
     <string name="login_password">密码</string>
     <string name="login_failed">登录失败</string>
@@ -18,4 +18,13 @@
     <string name="admin_user">管理员</string>
     <string name="profile">用户档案</string>
     <string name="change_bio">点击来修改你的介绍</string>
+    <string name="settings">设置</string>
+    <string name="admin">管理员</string>
+    <string name="non_admin_warning">你不是管理员, 不要使用Xposed或者startActivity打开该页面, 这个页面只是用于显示, 没有权限是操作不了的</string>
+    <string name="gerenate_invite_code">生成邀请码</string>
+    <string name="admin_registation">注册</string>
+    <string name="copy">复制</string>
+    <string name="ok">确认</string>
+    <string name="templete_invite_code">Invite code: %s</string>
+    <string name="invitation">邀请码</string>
 </resources>
