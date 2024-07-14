@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -245,6 +246,18 @@ class ChatActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (!MainActivity.isServiceBound) bindService(
+            Intent(
+                baseContext,
+                MessagingService::class.java
+            ).apply { putExtra("token", authorize.token) },
+            MainActivity.connection,
+            Context.BIND_AUTO_CREATE
+        )
+        return super.dispatchTouchEvent(ev)
     }
 
     override fun onDestroy() {
