@@ -21,7 +21,6 @@
     <string name="title_activity_group_details" translatable="false">GroupDetailsActivity</string>
     <string name="unknown_group">Unknown Group</string>
     <string name="admin_user">ADMIN</string>
-    <string name="title_activity_profile" translatable="false">ProfileActivity</string>
     <string name="profile">Profile</string>
     <string name="change_bio">Tap to change your bio</string>
     <string name="title_activity_admin" translatable="false">AdminActivity</string>
@@ -34,4 +33,6 @@
     <string name="ok">OK</string>
     <string name="templete_invite_code">Invite code: %s</string>
     <string name="invitation">Invitation</string>
+    <string name="title_activity_edit_profile" translatable="false">EditProfileActivity</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>

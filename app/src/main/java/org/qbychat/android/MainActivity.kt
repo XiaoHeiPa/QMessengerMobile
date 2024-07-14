@@ -235,7 +235,7 @@ class MainActivity : ComponentActivity() {
                                     startActivity(Intent(baseContext, ProfileActivity::class.java)
                                         .apply {
                                             putExtra("authorize", authorize.bundle())
-                                            putExtra("account", account.bundle())
+                                            putExtra("info", account.bundle())
                                         })
                                 }) {
                                 SubcomposeAsyncImage(
@@ -361,7 +361,7 @@ class MainActivity : ComponentActivity() {
                                                 val p0 = Intent(mContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
                                                 p0.putExtra("account", account.bundle())
-                                                p0.putExtra("token", authorize.token)
+                                                p0.putExtra("authorize", authorize.bundle())
                                                 mContext.startActivity(p0)
                                             }
                                     ) {
