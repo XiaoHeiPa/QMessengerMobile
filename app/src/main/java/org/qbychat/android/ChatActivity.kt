@@ -251,9 +251,6 @@ class ChatActivity : ComponentActivity() {
                 MessengerRequest.FetchLatestMessages(this.id, this.directMessage)
             ).json(MessengerRequest.FetchLatestMessages.serializer())
         )
-        Thread {
-            channel.updateMessage()
-        }.start()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -267,6 +264,9 @@ class ChatActivity : ComponentActivity() {
                 MainActivity.connection,
                 Context.BIND_AUTO_CREATE
             )
+            Thread {
+                channel.updateMessage()
+            }.start()
         }
     }
 
