@@ -100,10 +100,4 @@ class MessagingService : Service() {
         websocket = null
         return super.onUnbind(intent)
     }
-
-    override fun onDestroy() {
-        websocket?.close(200, null)
-        websocket = null
-        super.onDestroy()
-    }
 }
