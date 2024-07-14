@@ -255,7 +255,7 @@ class ChatActivity : ComponentActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && MainActivity.isServiceBound) {
+        if (hasFocus && !MainActivity.isServiceBound) {
             bindService(
                 Intent(
                     baseContext,
