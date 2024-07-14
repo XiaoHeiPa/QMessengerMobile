@@ -91,6 +91,7 @@ class ChatActivity : ComponentActivity() {
 
     private val messageReceiver = MessageReceiver()
     private lateinit var authorize: Authorize
+    private lateinit var channel: Channel
 
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -99,7 +100,7 @@ class ChatActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         @Suppress("DEPRECATION")
-        val channel =
+        channel =
             intent.getBundleExtra("channel")!!.getSerializable("object") as Channel
 
         @Suppress("DEPRECATION")
@@ -124,12 +125,7 @@ class ChatActivity : ComponentActivity() {
                 messageReceiver.setList(messages)
 
                 Thread {
-                    MessagingService.websocket?.send(
-                        MessengerRequest(
-                            RequestType.FETCH_LATEST_MESSAGES,
-                            MessengerRequest.FetchLatestMessages(channel.id, channel.directMessage)
-                        ).json(MessengerRequest.FetchLatestMessages.serializer())
-                    )
+                    channel.updateMessage()
                 }.start()
                 Scaffold(
                     topBar = {
@@ -246,6 +242,18 @@ class ChatActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun Channel.updateMessage() {
+        MessagingService.websocket?.send(
+            MessengerRequest(
+                RequestType.FETCH_LATEST_MESSAGES,
+                MessengerRequest.FetchLatestMessages(this.id, this.directMessage)
+            ).json(MessengerRequest.FetchLatestMessages.serializer())
+        )
+        Thread {
+            channel.updateMessage()
+        }.start()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
