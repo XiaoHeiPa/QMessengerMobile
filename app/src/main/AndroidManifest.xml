@@ -77,14 +77,6 @@
             android:resource="@string/default_channel_id" />
 
         <receiver android:name=".ChatActivity$MessageReceiver" />
-        <receiver
-            android:name=".service.UnlockReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

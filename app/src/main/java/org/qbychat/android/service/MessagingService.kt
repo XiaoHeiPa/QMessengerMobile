@@ -25,23 +25,6 @@ import org.qbychat.android.utils.updateFCMToken
 const val RECEIVED_MESSAGE = "org.qbychat.android.RECEIVED_MESSAGE"
 private lateinit var localToken: String
 
-class UnlockReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        if (isAppInForeground(context) && intent.action == Intent.ACTION_USER_PRESENT && !MainActivity.isServiceBound && ::localToken.isInitialized) {
-            Log.v(TAG, "Starting service...")
-            context.bindService(
-                Intent(
-                    context,
-                    MessagingService::class.java
-                ).apply { putExtra("token", localToken) },
-                MainActivity.connection,
-                Context.BIND_AUTO_CREATE
-            )
-        }
-    }
-}
-
-
 class MessagingService : Service() {
     private val mBinder = MessagingBinder()
 
