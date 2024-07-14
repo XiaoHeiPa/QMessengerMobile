@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.DialogFragment
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.generateInviteCode
 import org.qbychat.android.utils.translate
@@ -79,7 +78,9 @@ class AdminActivity : ComponentActivity() {
                     }
                     when {
                         inviteCodeDialogState.value -> {
-                            InviteCodeDialog(rememberInviteCode)
+                            InviteCodeDialog(rememberInviteCode) {
+                                inviteCodeDialogState.value = false
+                            }
                         }
                     }
                     Column(modifier = Modifier.padding(innerPadding)) {
@@ -115,7 +116,7 @@ class AdminActivity : ComponentActivity() {
 }
 
 @Composable
-fun InviteCodeDialog(inviteCode: String) {
+fun InviteCodeDialog(inviteCode: String, onBtnClick: () -> Unit) {
     val mContext = LocalContext.current
     AlertDialog(
         title = {
@@ -125,13 +126,15 @@ fun InviteCodeDialog(inviteCode: String) {
             Text(text = R.string.templete_invite_code.translate(mContext).format(inviteCode))
         },
         onDismissRequest = {
-
+            onBtnClick()
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    val clipboard = mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipboard =
+                        mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("INVITE_CODE", inviteCode))
+                    onBtnClick()
                 }
             ) {
                 Text(R.string.copy.translate(mContext))
@@ -140,7 +143,7 @@ fun InviteCodeDialog(inviteCode: String) {
         dismissButton = {
             TextButton(
                 onClick = {
-
+                    onBtnClick()
                 }
             ) {
                 Text(R.string.ok.translate(mContext))
@@ -148,6 +151,7 @@ fun InviteCodeDialog(inviteCode: String) {
         }
     )
 }
+
 @Preview(showBackground = true)
 @Composable
 fun Preview6() {
