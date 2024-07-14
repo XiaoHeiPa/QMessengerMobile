@@ -8,10 +8,10 @@ import org.qbychat.android.utils.JSON
 @Serializable
 data class Channel(
     val id: Int,
-    val shownName: String,
+    val title: String,
     val name: String,
     val directMessage: Boolean,
-    val preview: String = ""
+//    val preview: String = ""
 ) : java.io.Serializable
 
 @Serializable

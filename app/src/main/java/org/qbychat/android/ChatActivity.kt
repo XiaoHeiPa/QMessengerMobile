@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -68,7 +66,6 @@ import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.JSON
-import org.qbychat.android.utils.account
 import org.qbychat.android.utils.bundle
 
 
@@ -152,7 +149,7 @@ class ChatActivity : ComponentActivity() {
                                     )
 
                                     Text(
-                                        text = channel.shownName,
+                                        text = channel.title,
                                         modifier = Modifier.clickable {
                                             if (channel.directMessage) {
                                                 startActivity(

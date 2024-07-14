@@ -380,14 +380,14 @@ class MainActivity : ComponentActivity() {
                                                 modifier = Modifier.align(Alignment.TopStart)
                                             ) {
                                                 Text(
-                                                    text = channel.shownName
+                                                    text = channel.title
                                                 )
-                                                Text(
-                                                    text = channel.preview,
-                                                    color = MaterialTheme.colorScheme.onBackground.copy(
-                                                        alpha = 0.5f
-                                                    )
-                                                )
+//                                                Text(
+//                                                    text = channel.preview,
+//                                                    color = MaterialTheme.colorScheme.onBackground.copy(
+//                                                        alpha = 0.5f
+//                                                    )
+//                                                )
                                             }
                                             if (!channel.directMessage) {
                                                 Icon(
@@ -412,18 +412,17 @@ class MainActivity : ComponentActivity() {
         finish() // kill current activity
     }
 
+    @Composable
+    fun AddContactButton(modifier: Modifier = Modifier) {
+        FloatingActionButton(
+            shape = CircleShape,
+            onClick = {
 
-}
-
-@Composable
-fun AddContactButton(modifier: Modifier = Modifier) {
-    FloatingActionButton(
-        shape = CircleShape,
-        onClick = {
-        }
-    ) {
-        Box {
-            Icon(Icons.Filled.Add, "Floating action button.")
+            }
+        ) {
+            Box {
+                Icon(Icons.Filled.Add, "Floating action button.")
+            }
         }
     }
 }
