@@ -27,4 +27,5 @@
     <string name="ok">确认</string>
     <string name="templete_invite_code">Invite code: %s</string>
     <string name="invitation">邀请码</string>
+    <string name="edit_profile">编辑档案</string>
 </resources>

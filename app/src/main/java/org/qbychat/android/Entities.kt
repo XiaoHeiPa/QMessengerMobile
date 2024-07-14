@@ -45,7 +45,7 @@ data class Account(
 @Serializable
 data class Authorize(
     var username: String,
-    var role: String,
+    var role: Role,
     var token: String,
     var email: String,
     var expire: Long,

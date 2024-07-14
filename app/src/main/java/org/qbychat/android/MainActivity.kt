@@ -59,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
@@ -133,7 +134,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             QMessengerMobileTheme {
-                val mContext = LocalContext.current
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
 
@@ -143,7 +143,7 @@ class MainActivity : ComponentActivity() {
                 // check login
                 val accountJson = filesDir.resolve("account.json")
                 if (!accountJson.exists()) {
-                    doLogin(mContext = mContext)
+                    doLogin()
                     return@QMessengerMobileTheme
                 }
                 authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
@@ -165,21 +165,21 @@ class MainActivity : ComponentActivity() {
                 }
                 if (Date().time >= authorize.expire) {
                     Toast.makeText(
-                        mContext,
-                        R.string.refresh_token.translate(application),
+                        baseContext,
+                        stringResource(R.string.refresh_token),
                         Toast.LENGTH_LONG
                     ).show()
                     Thread {
                         val authorize1 = login(authorize.username, authorize.password!!)
                         if (authorize1 == null) {
                             // password changed
-                            doLogin(mContext = mContext)
+                            doLogin()
                             return@Thread
                         }
                         authorize1.password = authorize.password
                         authorize = authorize1
                         // save
-                        saveAuthorize(mContext, authorize1)
+                        saveAuthorize(baseContext, authorize1)
                     }.apply {
                         start()
                         join()
@@ -190,7 +190,7 @@ class MainActivity : ComponentActivity() {
                     account = authorize.token.account()!!
                     if (!isServiceBound) bindService(
                         Intent(
-                            mContext,
+                            baseContext,
                             MessagingService::class.java
                         ).apply { putExtra("token", authorize.token) },
                         connection,
@@ -235,7 +235,7 @@ class MainActivity : ComponentActivity() {
                                     startActivity(Intent(baseContext, ProfileActivity::class.java)
                                         .apply {
                                             putExtra("authorize", authorize.bundle())
-                                            putExtra("account", account.bundle())
+                                            putExtra("info", account.bundle())
                                         })
                                 }) {
                                 SubcomposeAsyncImage(
@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity() {
                                             contentDescription = "Admin Only"
                                         )
                                     },
-                                    label = { Text(text = R.string.admin.translate(mContext)) },
+                                    label = { Text(text = stringResource(R.string.admin)) },
                                     selected = false,
                                     onClick = {
                                         startActivity(Intent(baseContext, AdminActivity::class.java).apply {
@@ -283,7 +283,7 @@ class MainActivity : ComponentActivity() {
                                         contentDescription = "Settings"
                                     )
                                 },
-                                label = { Text(text = R.string.settings.translate(mContext)) },
+                                label = { Text(text = stringResource(R.string.settings)) },
                                 selected = false,
                                 onClick = {
                                     // TODO
@@ -296,13 +296,13 @@ class MainActivity : ComponentActivity() {
                                         contentDescription = "Logout"
                                     )
                                 },
-                                label = { Text(text = R.string.logout.translate(mContext)) },
+                                label = { Text(text = stringResource(R.string.logout)) },
                                 selected = false,
                                 onClick = {
                                     accountJson.delete()
                                     accountInfoJson.delete()
                                     unbindService(connection)
-                                    doLogin(mContext)
+                                    doLogin()
                                 }
                             )
                         }
@@ -358,11 +358,11 @@ class MainActivity : ComponentActivity() {
                                             .padding(10.dp)
                                             .fillMaxWidth()
                                             .clickable {
-                                                val p0 = Intent(mContext, ChatActivity::class.java)
+                                                val p0 = Intent(baseContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
                                                 p0.putExtra("account", account.bundle())
-                                                p0.putExtra("token", authorize.token)
-                                                mContext.startActivity(p0)
+                                                p0.putExtra("authorize", authorize.bundle())
+                                                startActivity(p0)
                                             }
                                     ) {
                                         SubcomposeAsyncImage(
@@ -407,8 +407,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun doLogin(mContext: Context) {
-        startActivity(Intent(mContext, LoginActivity::class.java))
+    private fun doLogin() {
+        startActivity(Intent(baseContext, LoginActivity::class.java))
         finish() // kill current activity
     }
 

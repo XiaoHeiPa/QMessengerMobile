@@ -89,6 +89,7 @@ class ChatActivity : ComponentActivity() {
     }
 
     private val messageReceiver = MessageReceiver()
+    private lateinit var authorize: Authorize
 
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -103,7 +104,8 @@ class ChatActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
-        val token = intent.getStringExtra("token")!!
+        authorize = intent.getBundleExtra("authorize")!!.getSerializable("object")!! as Authorize
+        val token = authorize.token
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(RECEIVED_MESSAGE)
@@ -155,7 +157,7 @@ class ChatActivity : ComponentActivity() {
                                                 startActivity(
                                                     Intent(
                                                         baseContext,
-                                                        UserDetailsActivity::class.java
+                                                        ProfileActivity::class.java
                                                     ).apply {
                                                         putExtra(
                                                             "id",
@@ -174,7 +176,7 @@ class ChatActivity : ComponentActivity() {
                                                             "id",
                                                             channel.id
                                                         )
-                                                        putExtra("token", token)
+                                                        putExtra("authorize", authorize.bundle())
                                                     }
                                                 )
                                             }
@@ -213,7 +215,7 @@ class ChatActivity : ComponentActivity() {
                     }
 
                 ) { innerPadding ->
-                    var lastSender = -1
+                    var lastMessage: Message? = null
                     val listState = rememberLazyListState()
                     LazyColumn(
                         state = listState,
@@ -230,9 +232,9 @@ class ChatActivity : ComponentActivity() {
                             ChatMessage(
                                 message = message,
                                 isFromMe = currentUser.id == message.sender,
-                                lastSender = lastSender
+                                lastMessage = lastMessage
                             )
-                            lastSender = message.sender!!
+                            lastMessage = message
                         }
                     }
 
@@ -251,14 +253,15 @@ class ChatActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ChatMessage(message: Message, isFromMe: Boolean, lastSender: Int? = null) {
+    fun ChatMessage(message: Message, isFromMe: Boolean, lastMessage: Message? = null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
         ) {
             Row {
-                if (!message.directMessage && !isFromMe && lastSender != message.sender) {
+                if (!message.directMessage && !isFromMe && lastMessage?.sender != message.sender) {
+
                     AsyncImage(
                         model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
                         contentDescription = "avatar",
@@ -269,8 +272,9 @@ class ChatActivity : ComponentActivity() {
                                 startActivity(
                                     Intent(
                                         baseContext,
-                                        UserDetailsActivity::class.java
+                                        ProfileActivity::class.java
                                     ).apply {
+                                        putExtra("authorize", authorize.bundle())
                                         putExtra("info", message.senderInfo.bundle())
                                     })
                             }

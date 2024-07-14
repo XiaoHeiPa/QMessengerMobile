@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -81,7 +82,7 @@ class LoginActivity : ComponentActivity() {
                         }
 
                         Text(
-                            text = R.string.register_tip.translate(application),
+                            text = stringResource(R.string.register_tip),
                             modifier = Modifier
                                 .padding(16.dp)
                                 .align(Alignment.BottomEnd)
@@ -116,7 +117,7 @@ class LoginActivity : ComponentActivity() {
             mutableStateOf(TextFieldValue(""))
         }
         Text(
-            text = R.string.login_title.translate(application),
+            text = stringResource(R.string.login_title),
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.headlineSmall
         )
@@ -131,7 +132,7 @@ class LoginActivity : ComponentActivity() {
                     .fillMaxWidth(1f)
                     .padding(horizontal = 10.dp),
                 label = {
-                    Text(text = R.string.login_username.translate(application))
+                    Text(text = stringResource(R.string.login_username))
                 }
             )
             OutlinedTextField(
@@ -145,7 +146,7 @@ class LoginActivity : ComponentActivity() {
                     .fillMaxWidth(1f)
                     .padding(horizontal = 10.dp),
                 label = {
-                    Text(text = R.string.login_password.translate(application))
+                    Text(text = stringResource(R.string.login_password))
                 }
             )
         }
@@ -179,7 +180,7 @@ class LoginActivity : ComponentActivity() {
             },
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = R.string.login_button.translate(application))
+            Text(text = stringResource(R.string.login_button))
         }
     }
 }

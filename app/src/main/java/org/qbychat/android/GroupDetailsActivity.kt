@@ -6,12 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -32,7 +29,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,12 +44,14 @@ import org.qbychat.android.utils.translate
 
 class GroupDetailsActivity : ComponentActivity() {
     private lateinit var token: String
+    private lateinit var authorize: Authorize
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        token = intent.getStringExtra("token")!!
+        authorize = intent.getBundleExtra("authorize")!!.getSerializable("object")!! as Authorize
+        token = authorize.token
         val targetId = intent.getIntExtra("id", -1)
         setContent {
             QMessengerMobileTheme {
@@ -137,9 +135,9 @@ class GroupDetailsActivity : ComponentActivity() {
     @Composable
     fun OwnerDetails(owner: Account) {
         Row(modifier = Modifier.clickable {
-            startActivity(Intent(baseContext, UserDetailsActivity::class.java).apply {
+            startActivity(Intent(baseContext, ProfileActivity::class.java).apply {
                 putExtra("info", owner.bundle())
-                putExtra("token", token)
+                putExtra("authorize", authorize.bundle())
             })
         }) {
             SubcomposeAsyncImage(
