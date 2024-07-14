@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.translate
@@ -42,7 +43,7 @@ class EditProfileActivity : ComponentActivity() {
                                 titleContentColor = MaterialTheme.colorScheme.primary
                             ),
                             title = {
-                                Text(text = R.string.edit_profile.translate(application))
+                                Text(text = stringResource(R.string.edit_profile))
                             },
                             navigationIcon = {
                                 IconButton(onClick = { this@EditProfileActivity.finish() }) {

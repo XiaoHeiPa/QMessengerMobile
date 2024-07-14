@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
@@ -57,7 +58,7 @@ class AdminActivity : ComponentActivity() {
                                 titleContentColor = MaterialTheme.colorScheme.primary
                             ),
                             title = {
-                                Text(text = R.string.admin.translate(application))
+                                Text(text = stringResource(R.string.admin))
                             },
                             navigationIcon = {
                                 IconButton(onClick = { this@AdminActivity.finish() }) {
@@ -85,7 +86,7 @@ class AdminActivity : ComponentActivity() {
                     }
                     Column(modifier = Modifier.padding(innerPadding)) {
                         if (account.role != Role.ADMIN) {
-                            Text(text = R.string.non_admin_warning.translate(application))
+                            Text(text = stringResource(R.string.non_admin_warning))
                         }
                         Card(
                             modifier = Modifier
@@ -94,7 +95,7 @@ class AdminActivity : ComponentActivity() {
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = R.string.admin_registation.translate(application),
+                                text = stringResource(R.string.admin_registation),
                                 style = MaterialTheme.typography.headlineMedium,
                                 modifier = Modifier.padding(5.dp)
                             )
@@ -104,7 +105,7 @@ class AdminActivity : ComponentActivity() {
                                     inviteCodeDialogState.value = true
                                 }
                             }) {
-                                Text(text = R.string.gerenate_invite_code.translate(application))
+                                Text(text = stringResource(R.string.gerenate_invite_code))
                             }
                         }
 
@@ -120,10 +121,10 @@ fun InviteCodeDialog(inviteCode: String, onBtnClick: () -> Unit) {
     val mContext = LocalContext.current
     AlertDialog(
         title = {
-            Text(text = R.string.invitation.translate(mContext))
+            Text(text = stringResource(R.string.invitation))
         },
         text = {
-            Text(text = R.string.templete_invite_code.translate(mContext).format(inviteCode))
+            Text(text = stringResource(R.string.templete_invite_code, inviteCode))
         },
         onDismissRequest = {
             onBtnClick()
@@ -137,7 +138,7 @@ fun InviteCodeDialog(inviteCode: String, onBtnClick: () -> Unit) {
                     onBtnClick()
                 }
             ) {
-                Text(R.string.copy.translate(mContext))
+                Text(stringResource(R.string.copy))
             }
         },
         dismissButton = {
@@ -146,7 +147,7 @@ fun InviteCodeDialog(inviteCode: String, onBtnClick: () -> Unit) {
                     onBtnClick()
                 }
             ) {
-                Text(R.string.ok.translate(mContext))
+                Text(stringResource(R.string.ok))
             }
         }
     )
