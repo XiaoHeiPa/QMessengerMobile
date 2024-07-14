@@ -156,7 +156,7 @@ class MainActivity : ComponentActivity() {
                             "null",
                             "null@lunarclient.top",
                             registerTime = 0,
-                            nickname = stringResource(R.string.unknown_user)
+                            nickname = R.string.unknown_user.translate(application)
                         )
                     )
                 }
