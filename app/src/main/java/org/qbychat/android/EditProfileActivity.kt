@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -142,13 +143,13 @@ class EditProfileActivity : ComponentActivity() {
                             label = {
                                 Row {
                                     Icon(
-                                        imageVector = Icons.Outlined.Person,
+                                        imageVector = Icons.Outlined.Info,
                                         contentDescription = "icon"
                                     )
                                     Text(text = stringResource(id = R.string.nickname))
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
                         )
 
                         TextField(
