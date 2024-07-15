@@ -95,15 +95,14 @@ class ChatActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        @Suppress("DEPRECATION")
         channel =
             intent.getBundleExtra("channel")!!.getSerializable("object") as Channel
 
-        @Suppress("DEPRECATION")
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
         authorize = intent.getBundleExtra("authorize")!!.getSerializable("object")!! as Authorize
