@@ -89,10 +89,7 @@ private inline fun <reified T> String.postAPI(
     val request = Request.Builder()
         .url("$HTTP_PROTOCOL$BACKEND$api")
         .post(body)
-        .apply {
-            if (this@postAPI.isNotEmpty())
-                this.header("Authorization", "Bearer $this")
-        }
+        .header("Authorization", "Bearer $this")
         .build()
     httpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
