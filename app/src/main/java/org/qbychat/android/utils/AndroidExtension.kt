@@ -46,6 +46,26 @@ fun Activity.openFilePicker(type: String = "*/*") {
 fun Int.translate(mContext: Context): String = mContext.getString(this)
 fun Int.translate(application: Application): String = application.getString(this)
 
+//fun String.requestPermission(activity: Activity) {
+//    if (Build.VERSION.SDK_INT >= 33) {
+//        if (ActivityCompat.checkSelfPermission(
+//                activity,
+//                this
+//            ) == PackageManager.PERMISSION_DENIED
+//        ) {
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(
+//                    activity,
+//                    this
+//                )
+//            ) {
+//                activity.launchSettings()
+//            } else {
+//                ActivityCompat.requestPermissions(activity, arrayOf(this), 100)
+//            }
+//        }
+//    }
+//}
+
 fun String.requestPermission(activity: Activity) {
     if (Build.VERSION.SDK_INT >= 33) {
         if (ActivityCompat.checkSelfPermission(
@@ -53,13 +73,11 @@ fun String.requestPermission(activity: Activity) {
                 this
             ) == PackageManager.PERMISSION_DENIED
         ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(
                     activity,
                     this
                 )
             ) {
-                activity.launchSettings()
-            } else {
                 ActivityCompat.requestPermissions(activity, arrayOf(this), 100)
             }
         }

@@ -201,7 +201,5 @@ class EditProfileActivity : ComponentActivity() {
             }
         }
     }
-
-
 }
 
