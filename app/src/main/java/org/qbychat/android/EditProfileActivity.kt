@@ -49,6 +49,8 @@ import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
 import org.qbychat.android.utils.changeBio
 import org.qbychat.android.utils.changeNickname
+import org.qbychat.android.utils.forceChangeBio
+import org.qbychat.android.utils.forceChangeNickname
 import kotlin.properties.Delegates
 
 class EditProfileActivity : ComponentActivity() {
@@ -135,8 +137,14 @@ class EditProfileActivity : ComponentActivity() {
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     if (newNickname.isEmpty()) return@KeyboardActions // 不推荐使用空昵称, 服务端暂时没有判断, 去除这行可使用空昵称. 后续可能添加限制
-                                    authorize.token.changeNickname(newNickname) {
-                                        currentNickname = newNickname
+                                    if (useAdminAPI) {
+                                        authorize.token.forceChangeNickname(target.id, newNickname) {
+                                            currentNickname = newNickname
+                                        }
+                                    } else {
+                                        authorize.token.changeNickname(newNickname) {
+                                            currentNickname = newNickname
+                                        }
                                     }
                                 }
                             ),
@@ -160,7 +168,13 @@ class EditProfileActivity : ComponentActivity() {
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    authorize.token.changeBio(newBio) {
+                                    if (useAdminAPI) {
+                                        authorize.token.forceChangeBio(target.id, newBio) {
+
+                                        }
+                                    } else {
+                                        authorize.token.changeBio(newBio) {
+                                        }
                                     }
                                 }
                             ),
