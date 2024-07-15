@@ -28,4 +28,6 @@
     <string name="templete_invite_code">Invite code: %s</string>
     <string name="invitation">邀请码</string>
     <string name="edit_profile">编辑档案</string>
+    <string name="nickname">昵称</string>
+    <string name="bio">介绍</string>
 </resources>

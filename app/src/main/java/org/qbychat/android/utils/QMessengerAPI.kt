@@ -138,19 +138,31 @@ fun String.changeUsername(newName: String, onSuccess: (String) -> Unit) {
 }
 
 fun String.changePassword(newPassword: String, onSuccess: (String) -> Unit) {
-    this.postAPI("/user/account/password", "value=$newPassword".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+    this.postAPI("/user/account/password", "newPassword=$newPassword".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
     }
 }
 
 fun String.changeBio(newBio: String, onSuccess: (String) -> Unit) {
-    this.postAPI("/user/account/bio", "value=$newBio".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+    this.postAPI("/user/account/bio", "newBio=$newBio".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.changeNickname(newNickname: String, onSuccess: (String) -> Unit) {
+    this.postAPI("/user/account/nickname", "newNickname=$newNickname".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
     }
 }
 
 fun String.forceChangeUsername(user: Int, newUsername: String, onSuccess: (String) -> Unit) {
     this.postAPI("/admin/manage/user/${user}/username", "newUsername=$newUsername".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.forceChangeNickname(user: Int, newNickname: String, onSuccess: (String) -> Unit) {
+    this.postAPI("/admin/manage/user/${user}/nickname", "newNickname=$newNickname".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
     }
 }
