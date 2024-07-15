@@ -107,7 +107,6 @@ class ChatActivity : ComponentActivity() {
         val currentUser =
             intent.getBundleExtra("account")!!.getSerializable("object") as Account
         authorize = intent.getBundleExtra("authorize")!!.getSerializable("object")!! as Authorize
-        val token = authorize.token
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(RECEIVED_MESSAGE)

@@ -72,7 +72,8 @@ class EditProfileActivity : ComponentActivity() {
 
         val getAvatar =
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-                val stream = contentResolver.openInputStream(uri!!)!!
+                if (uri == null) return@registerForActivityResult
+                val stream = contentResolver.openInputStream(uri)!!
                 stream.use {
                     if (useAdminAPI) {
                         authorize.token.forceChangeAvatar(target.id, stream) {
