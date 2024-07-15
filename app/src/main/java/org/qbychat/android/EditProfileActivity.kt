@@ -1,9 +1,11 @@
 package org.qbychat.android
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,12 +47,14 @@ import coil.compose.SubcomposeAsyncImage
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
+import org.qbychat.android.utils.changeAvatar
 import org.qbychat.android.utils.changeBio
 import org.qbychat.android.utils.changeNickname
+import org.qbychat.android.utils.forceChangeAvatar
 import org.qbychat.android.utils.forceChangeBio
 import org.qbychat.android.utils.forceChangeNickname
-import org.qbychat.android.utils.openFilePicker
 import kotlin.properties.Delegates
+
 
 class EditProfileActivity : ComponentActivity() {
     private lateinit var target: Account
@@ -65,6 +69,22 @@ class EditProfileActivity : ComponentActivity() {
         authorize = intent.getBundleExtra("authorize")!!.getSerializable("object") as Authorize
         target = intent.getBundleExtra("target")!!.getSerializable("object") as Account
         useAdminAPI = intent.getBooleanExtra("useAdminAPI", false)
+
+        val getAvatar =
+            registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+                val stream = contentResolver.openInputStream(uri!!)!!
+                stream.use {
+                    if (useAdminAPI) {
+                        authorize.token.forceChangeAvatar(target.id, stream) {
+
+                        }
+                    } else {
+                        authorize.token.changeAvatar(stream) {
+
+                        }
+                    }
+                }
+            }
         setContent {
             QMessengerMobileTheme {
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
@@ -109,7 +129,7 @@ class EditProfileActivity : ComponentActivity() {
                                         .size(90.dp)
                                         .clip(CircleShape)
                                         .clickable {
-                                            this@EditProfileActivity.openFilePicker("image/*")
+                                            getAvatar.launch("image/*")
                                         })
                                 Text(
                                     text = currentNickname,
@@ -118,7 +138,8 @@ class EditProfileActivity : ComponentActivity() {
                                 )
                             }
                         }
-                        TextField(value = newNickname,
+                        TextField(
+                            value = newNickname,
                             onValueChange = { newValue ->
                                 newNickname = newValue
                             },
@@ -151,7 +172,8 @@ class EditProfileActivity : ComponentActivity() {
                                 .padding(vertical = 10.dp)
                         )
 
-                        TextField(value = newBio,
+                        TextField(
+                            value = newBio,
                             onValueChange = { newValue ->
                                 newBio = newValue
                             },
@@ -179,5 +201,7 @@ class EditProfileActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 

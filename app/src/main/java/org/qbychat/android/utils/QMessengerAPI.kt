@@ -20,6 +20,8 @@ import org.qbychat.android.Group
 import org.qbychat.android.Invitation
 import org.qbychat.android.RestBean
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
 
 private val httpClient = OkHttpClient.Builder()
@@ -152,6 +154,12 @@ fun String.changeNickname(newNickname: String, onSuccess: (String?) -> Unit) {
     }
 }
 
+fun String.changeAvatar(stream: InputStream, onSuccess: (String?) -> Unit) {
+    this.postAPI("/user/account/avatar", stream.readBytes().toRequestBody("application/octet-stream".toMediaType())) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
 fun String.forceChangeUsername(user: Int, newUsername: String, onSuccess: (String?) -> Unit) {
     this.postAPI("/admin/manage/user/${user}/username", "newUsername=$newUsername".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
@@ -166,6 +174,12 @@ fun String.forceChangeNickname(user: Int, newNickname: String, onSuccess: (Strin
 
 fun String.forceChangeBio(user: Int, newBio: String, onSuccess: (String?) -> Unit) {
     this.postAPI("/admin/manage/user/${user}/bio", "newBio=$newBio".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.forceChangeAvatar(user: Int, avatarStream: InputStream, onSuccess: (String?) -> Unit) {
+    this.postAPI("/admin/manage/user/${user}/avatar", avatarStream.readBytes().toRequestBody("application/octet-stream".toMediaType())) { _, response ->
         onSuccess(response.data)
     }
 }
