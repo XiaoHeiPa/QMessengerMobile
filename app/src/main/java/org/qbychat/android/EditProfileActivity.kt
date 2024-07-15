@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
@@ -51,6 +49,7 @@ import org.qbychat.android.utils.changeBio
 import org.qbychat.android.utils.changeNickname
 import org.qbychat.android.utils.forceChangeBio
 import org.qbychat.android.utils.forceChangeNickname
+import org.qbychat.android.utils.openFilePicker
 import kotlin.properties.Delegates
 
 class EditProfileActivity : ComponentActivity() {
@@ -68,28 +67,21 @@ class EditProfileActivity : ComponentActivity() {
         useAdminAPI = intent.getBooleanExtra("useAdminAPI", false)
         setContent {
             QMessengerMobileTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopAppBar(
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            title = {
-                                Text(text = stringResource(R.string.edit_profile))
-                            },
-                            navigationIcon = {
-                                IconButton(onClick = { this@EditProfileActivity.finish() }) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Back"
-                                    )
-                                }
-                            }
-                        )
-                    }
-                ) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+                    TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary
+                    ), title = {
+                        Text(text = stringResource(R.string.edit_profile))
+                    }, navigationIcon = {
+                        IconButton(onClick = { this@EditProfileActivity.finish() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    })
+                }) { innerPadding ->
                     val scrollState = rememberScrollState()
                     var currentNickname by remember {
                         mutableStateOf(target.nickname)
@@ -108,8 +100,7 @@ class EditProfileActivity : ComponentActivity() {
                     ) {
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.align(Alignment.Center)) {
-                                SubcomposeAsyncImage(
-                                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${target.id}&isUser=1",
+                                SubcomposeAsyncImage(model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${target.id}&isUser=1",
                                     loading = {
                                         CircularProgressIndicator()
                                     },
@@ -118,9 +109,8 @@ class EditProfileActivity : ComponentActivity() {
                                         .size(90.dp)
                                         .clip(CircleShape)
                                         .clickable {
-                                            // TODO Change avatar
-                                        }
-                                )
+                                            this@EditProfileActivity.openFilePicker("image/*")
+                                        })
                                 Text(
                                     text = currentNickname,
                                     style = MaterialTheme.typography.headlineLarge,
@@ -128,26 +118,25 @@ class EditProfileActivity : ComponentActivity() {
                                 )
                             }
                         }
-                        TextField(
-                            value = newNickname,
+                        TextField(value = newNickname,
                             onValueChange = { newValue ->
                                 newNickname = newValue
                             },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    if (newNickname.isEmpty()) return@KeyboardActions // 不推荐使用空昵称, 服务端暂时没有判断, 去除这行可使用空昵称. 后续可能添加限制
-                                    if (useAdminAPI) {
-                                        authorize.token.forceChangeNickname(target.id, newNickname) {
-                                            currentNickname = newNickname
-                                        }
-                                    } else {
-                                        authorize.token.changeNickname(newNickname) {
-                                            currentNickname = newNickname
-                                        }
+                            keyboardActions = KeyboardActions(onDone = {
+                                if (newNickname.isEmpty()) return@KeyboardActions // 不推荐使用空昵称, 服务端暂时没有判断, 去除这行可使用空昵称. 后续可能添加限制
+                                if (useAdminAPI) {
+                                    authorize.token.forceChangeNickname(
+                                        target.id, newNickname
+                                    ) {
+                                        currentNickname = newNickname
+                                    }
+                                } else {
+                                    authorize.token.changeNickname(newNickname) {
+                                        currentNickname = newNickname
                                     }
                                 }
-                            ),
+                            }),
                             label = {
                                 Row {
                                     Icon(
@@ -157,27 +146,23 @@ class EditProfileActivity : ComponentActivity() {
                                     Text(text = stringResource(id = R.string.nickname))
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp)
                         )
 
-                        TextField(
-                            value = newBio,
+                        TextField(value = newBio,
                             onValueChange = { newValue ->
                                 newBio = newValue
                             },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    if (useAdminAPI) {
-                                        authorize.token.forceChangeBio(target.id, newBio) {
-
-                                        }
-                                    } else {
-                                        authorize.token.changeBio(newBio) {
-                                        }
-                                    }
+                            keyboardActions = KeyboardActions(onDone = {
+                                if (useAdminAPI) {
+                                    authorize.token.forceChangeBio(target.id, newBio) { }
+                                } else {
+                                    authorize.token.changeBio(newBio) { }
                                 }
-                            ),
+                            }),
                             label = {
                                 Row {
                                     Icon(
@@ -192,14 +177,6 @@ class EditProfileActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-    }
-
-
-    @Preview(showBackground = true)
-    @Composable
-    fun Preview7() {
-        QMessengerMobileTheme {
         }
     }
 }

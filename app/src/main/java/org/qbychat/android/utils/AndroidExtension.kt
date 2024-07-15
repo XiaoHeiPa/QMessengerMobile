@@ -35,11 +35,18 @@ val Activity.vibrator: Vibrator
         getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
 
+const val PICK_FILE_REQUEST_CODE = 1
+
+fun Activity.openFilePicker(type: String = "*/*") {
+    val intent = Intent(Intent.ACTION_GET_CONTENT)
+    intent.type = type
+    startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
+}
+
 fun Int.translate(mContext: Context): String = mContext.getString(this)
 fun Int.translate(application: Application): String = application.getString(this)
 
 fun String.requestPermission(activity: Activity) {
-
     if (Build.VERSION.SDK_INT >= 33) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
