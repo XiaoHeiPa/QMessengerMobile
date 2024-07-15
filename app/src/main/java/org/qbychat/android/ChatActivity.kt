@@ -160,7 +160,7 @@ class ChatActivity : ComponentActivity() {
                                                             "id",
                                                             channel.id
                                                         )
-                                                        putExtra("token", token)
+                                                        putExtra("authorize", authorize.bundle())
                                                     }
                                                 )
                                             } else {
