@@ -5,7 +5,7 @@
     <string name="login_title">登录到QMessenger</string>
     <string name="login_button">登录</string>
     <string name="register_tip">没有账户? 点击这里进行注册</string>
-    <string name="login_username">用户名</string>
+    <string name="username">用户名</string>
     <string name="login_password">密码</string>
     <string name="login_failed">登录失败</string>
     <string name="refresh_token">token失效, 尝试重新获取</string>

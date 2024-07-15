@@ -46,13 +46,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.json.Json
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
-import org.qbychat.android.utils.JSON
 import org.qbychat.android.utils.login
 import org.qbychat.android.utils.saveAuthorize
-import org.qbychat.android.utils.translate
-import java.io.File
 
 
 class LoginActivity : ComponentActivity() {
@@ -132,7 +128,7 @@ class LoginActivity : ComponentActivity() {
                     .fillMaxWidth(1f)
                     .padding(horizontal = 10.dp),
                 label = {
-                    Text(text = stringResource(R.string.login_username))
+                    Text(text = stringResource(R.string.username))
                 }
             )
             OutlinedTextField(

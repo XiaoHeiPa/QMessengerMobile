@@ -131,20 +131,32 @@ fun String.getFriends(): List<Friend>? = this.getAPI("/user/friends/list")
 
 fun String.account(): Account? = this.getAPI("/user/account")
 
-fun String.changeUsername(newName: String, onSuccess: (Account) -> Unit) {
+fun String.changeUsername(newName: String, onSuccess: (String) -> Unit) {
     this.postAPI("/user/account/username", "value=$newName".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
     }
 }
 
-fun String.changePassword(newPassword: String, onSuccess: (Account) -> Unit) {
+fun String.changePassword(newPassword: String, onSuccess: (String) -> Unit) {
     this.postAPI("/user/account/password", "value=$newPassword".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
     }
 }
 
-fun String.changeBio(newBio: String, onSuccess: (Account) -> Unit) {
+fun String.changeBio(newBio: String, onSuccess: (String) -> Unit) {
     this.postAPI("/user/account/bio", "value=$newBio".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.forceChangeUsername(user: Int, newUsername: String, onSuccess: (String) -> Unit) {
+    this.postAPI("/admin/manage/user/${user}/username", "newUsername=$newUsername".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
+        onSuccess(response.data)
+    }
+}
+
+fun String.forceChangeBio(user: Int, newBio: String, onSuccess: (String) -> Unit) {
+    this.postAPI("/admin/manage/user/${user}/bio", "newBio=$newBio".toRequestBody(X_WWW_FORM_URLENCODED)) { _, response ->
         onSuccess(response.data)
     }
 }

@@ -7,7 +7,7 @@
     <string name="login_title">Sign in QMessenger</string>
     <string name="login_button">Login</string>
     <string name="register_tip">No account? Click to register</string>
-    <string name="login_username">Username</string>
+    <string name="username">Username</string>
     <string name="login_password">Password</string>
     <string name="login_failed">Login Failed</string>
     <string name="refresh_token">Refreshing account</string>
