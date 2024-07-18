@@ -214,6 +214,7 @@ class ChatActivity : ComponentActivity() {
                                                     }
                                                 }
                                             }
+                                            selectedMessages.clear()
                                         }
                                     ) {
                                         Icon(painter = painterResource(id = R.drawable.file_copy), contentDescription = "Copy")
