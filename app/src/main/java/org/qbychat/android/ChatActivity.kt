@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -190,7 +192,9 @@ class ChatActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        ChatBox { messageContent ->
+                        ChatBox(onMenuClicked = {
+
+                        }, onSendMessageClicked = { messageContent ->
                             val websocket = MessagingService.websocket!!
                             val request = MessengerRequest(
                                 SEND_MESSAGE,
@@ -206,7 +210,7 @@ class ChatActivity : ComponentActivity() {
                                     request
                                 )
                             )
-                        }
+                        })
                     }
 
                 ) { innerPadding ->
@@ -326,7 +330,11 @@ class ChatActivity : ComponentActivity() {
 
 
 @Composable
-fun ChatBox(modifier: Modifier = Modifier, onSendMessageClicked: (String) -> Unit) {
+fun ChatBox(
+    modifier: Modifier = Modifier,
+    onMenuClicked: () -> Unit,
+    onSendMessageClicked: (String) -> Unit
+) {
     var chatBoxValue by remember {
         mutableStateOf(TextFieldValue(""))
     }
@@ -357,16 +365,27 @@ fun ChatBox(modifier: Modifier = Modifier, onSendMessageClicked: (String) -> Uni
             onClick = {
                 val msg = chatBoxValue.text
                 if (msg.isBlank()) return@IconButton
-                onSendMessageClicked(chatBoxValue.text)
+                if (btnMethodIsSend) {
+                    onSendMessageClicked(chatBoxValue.text)
+                } else {
+                    onMenuClicked()
+                }
                 chatBoxValue = TextFieldValue("") // clear text field
             },
             modifier = Modifier
                 .clip(CircleShape)
                 .background(color = MaterialTheme.colorScheme.onPrimary)
                 .align(Alignment.CenterVertically)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            onMenuClicked()
+                        }
+                    )
+                }
         ) {
             Icon(
-                imageVector = if (btnMethodIsSend) Icons.AutoMirrored.Filled.Send else Icons.Filled.AddCircle,
+                imageVector = if (btnMethodIsSend) Icons.AutoMirrored.Filled.Send else Icons.Filled.Add,
                 contentDescription = "Function btn",
                 modifier = Modifier
                     .fillMaxSize()
