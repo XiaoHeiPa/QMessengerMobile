@@ -4,6 +4,8 @@ package org.qbychat.android
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -57,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -118,6 +121,8 @@ class ChatActivity : ComponentActivity() {
             registerReceiver(messageReceiver, intentFilter)
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        val clipboard =
+            baseContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         setContent {
             QMessengerMobileTheme {
                 val messages = remember {
@@ -191,6 +196,28 @@ class ChatActivity : ComponentActivity() {
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Back"
                                     )
+                                }
+                            },
+                            actions = {
+                                if (selectedMessages.size == 1) {
+                                    IconButton(
+                                        onClick = {
+                                            selectedMessages.forEach { msgId ->
+                                                val msg = messages.find { it.id == msgId }?.let {
+                                                    if (it.type == Message.MessageType.TEXT) {
+                                                        clipboard.setPrimaryClip(
+                                                            ClipData.newPlainText(
+                                                                "MESSAGE",
+                                                                it.content.text
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ) {
+                                        Icon(painter = painterResource(id = R.drawable.file_copy), contentDescription = "Copy")
+                                    }
                                 }
                             }
                         )
