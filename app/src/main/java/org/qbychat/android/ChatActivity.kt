@@ -317,9 +317,7 @@ class ChatActivity : ComponentActivity() {
         selectedMessages: SnapshotStateList<Int>,
         lastMessage: Message? = null
     ) {
-        var isSelected by remember {
-            mutableStateOf(selectedMessages.contains(message.id))
-        }
+        var isSelected = selectedMessages.contains(message.id)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
