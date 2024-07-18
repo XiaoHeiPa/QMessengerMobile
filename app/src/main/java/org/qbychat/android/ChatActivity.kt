@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -127,6 +128,9 @@ class ChatActivity : ComponentActivity() {
                 Thread {
                     channel.updateMessage()
                 }.start()
+                val selectedMessages = remember {
+                    mutableStateListOf<Int>()
+                }
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -231,6 +235,7 @@ class ChatActivity : ComponentActivity() {
                             ChatMessage(
                                 message = message,
                                 isFromMe = currentUser.id == message.sender,
+                                selectedMessages = selectedMessages,
                                 lastMessage = lastMessage
                             )
                             lastMessage = message
@@ -278,7 +283,15 @@ class ChatActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ChatMessage(message: Message, isFromMe: Boolean, lastMessage: Message? = null) {
+    fun ChatMessage(
+        message: Message,
+        isFromMe: Boolean,
+        selectedMessages: SnapshotStateList<Int>,
+        lastMessage: Message? = null
+    ) {
+        var isSelected by remember {
+            mutableStateOf(selectedMessages.contains(message.id))
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -286,7 +299,6 @@ class ChatActivity : ComponentActivity() {
         ) {
             Row {
                 if (!message.directMessage && !isFromMe && lastMessage?.sender != message.sender) {
-
                     AsyncImage(
                         model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${message.sender}&isUser=1",
                         contentDescription = "avatar",
@@ -318,12 +330,34 @@ class ChatActivity : ComponentActivity() {
                             bottomEnd = if (isFromMe) 0f else 48f
                         )
                     )
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(if (isSelected) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary)
                     .padding(16.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = {
+                                isSelected = true
+                                selectedMessages.add(message.id!!)
+                            },
+                            onPress = {
+                                if (selectedMessages.size != 0 && !selectedMessages.contains(
+                                        message.id!!
+                                    )
+                                ) {
+                                    isSelected = true
+                                    selectedMessages.add(message.id)
+                                } else if (isSelected) {
+                                    isSelected = false
+                                    selectedMessages.remove(message.id)
+                                }
+                            }
+                        )
+                    }
             ) {
-                Text(text = message.content.text, color = MaterialTheme.colorScheme.onPrimary)
+                Text(
+                    text = message.content.text,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
-
         }
     }
 }
