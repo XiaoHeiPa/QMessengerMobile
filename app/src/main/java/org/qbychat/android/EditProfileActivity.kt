@@ -127,7 +127,7 @@ class EditProfileActivity : ComponentActivity() {
                                     },
                                     contentDescription = "avatar",
                                     modifier = Modifier
-                                        .size(90.dp)
+                                        .size(95.dp)
                                         .clip(CircleShape)
                                         .clickable {
                                             getAvatar.launch("image/*")
@@ -135,7 +135,7 @@ class EditProfileActivity : ComponentActivity() {
                                 Text(
                                     text = currentNickname,
                                     style = MaterialTheme.typography.headlineLarge,
-                                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp)
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
                                 )
                             }
                         }

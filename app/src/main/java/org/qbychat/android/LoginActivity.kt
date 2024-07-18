@@ -47,13 +47,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
+import org.qbychat.android.utils.POST_NOTIFICATIONS
 import org.qbychat.android.utils.login
+import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
 
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        POST_NOTIFICATIONS.requestPermission(this)
+
         enableEdgeToEdge()
         setContent {
             QMessengerMobileTheme {

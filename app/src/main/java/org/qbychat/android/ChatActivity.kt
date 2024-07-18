@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -330,11 +330,15 @@ fun ChatBox(modifier: Modifier = Modifier, onSendMessageClicked: (String) -> Uni
     var chatBoxValue by remember {
         mutableStateOf(TextFieldValue(""))
     }
+    var btnMethodIsSend by remember {
+        mutableStateOf(false)
+    }
     Row(modifier = Modifier.padding(16.dp)) {
         TextField(
             value = chatBoxValue,
             onValueChange = { newValue ->
                 chatBoxValue = newValue // update text
+                btnMethodIsSend = if (newValue.text.isEmpty()) false else true
             },
             modifier = Modifier
                 .weight(1f)
@@ -362,8 +366,8 @@ fun ChatBox(modifier: Modifier = Modifier, onSendMessageClicked: (String) -> Uni
                 .align(Alignment.CenterVertically)
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.Send,
-                contentDescription = "Send message",
+                imageVector = if (btnMethodIsSend) Icons.AutoMirrored.Filled.Send else Icons.Filled.AddCircle,
+                contentDescription = "Function btn",
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(8.dp)

@@ -130,8 +130,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         createNotificationChannel(R.string.notification_channel_messages.translate(application))
-        POST_NOTIFICATIONS.requestPermission(this)
-
 
         setContent {
             QMessengerMobileTheme {
