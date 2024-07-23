@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,9 +32,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.compose.LazyPagingItems
 import coil.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.flow.Flow
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
 import org.qbychat.android.utils.HTTP_PROTOCOL
@@ -118,18 +126,28 @@ class GroupDetailsActivity : ComponentActivity() {
                     .clip(CircleShape)
             )
             Column(modifier = Modifier.padding(horizontal = 5.dp)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(text = description, style = MaterialTheme.typography.bodyMedium)
-                OwnerDetails(owner)
+                Info(title, description, owner)
             }
         }
         if (ownerId == -1) return
         ownerId.account(token) { account ->
             owner = account
         }
+    }
+
+    @Composable
+    fun Member() {
+
+    }
+
+    @Composable
+    fun Info(title: String, description: String, owner: Account) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Text(text = description, style = MaterialTheme.typography.bodyMedium)
+        OwnerDetails(owner)
     }
 
     @Composable
@@ -155,9 +173,3 @@ class GroupDetailsActivity : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun Preview4() {
-    QMessengerMobileTheme {
-    }
-}
