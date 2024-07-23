@@ -124,7 +124,7 @@ data class Group(
     val shownName: String,
     val description: String = "Default description",
     val createTime: Long,
-    val members: Set<Int>,
+    val members: List<Int>,
 )
 
 @Serializable

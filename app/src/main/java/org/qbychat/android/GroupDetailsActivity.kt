@@ -1,7 +1,9 @@
 package org.qbychat.android
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -173,3 +175,28 @@ class GroupDetailsActivity : ComponentActivity() {
     }
 }
 
+//class GroupMemberSource(
+//    private val group: Group,
+//    private val token: String
+//): PagingSource<Int, Account>() {
+//    override fun getRefreshKey(state: PagingState<Int, Account>): Int? {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Account> {
+//        try {
+//            // Start refresh at page 1 if undefined.
+//            val nextPageNumber = params.key ?: 1
+//            val response = TODO("")
+//            return LoadResult.Page(
+//                data = response.users,
+//                prevKey = null, // Only paging forward.
+//                nextKey = response.nextPageNumber
+//            )
+//        } catch (e: Exception) {
+//            Log.e(TAG, e.stackTraceToString())
+//            return LoadResult.Error(e)
+//        }
+//    }
+//}
+//
