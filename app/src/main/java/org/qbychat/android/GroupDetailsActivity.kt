@@ -105,9 +105,9 @@ class GroupDetailsActivity : ComponentActivity() {
                             accounts.add(Account.UNKNOWN)
                         }
                         LazyColumn {
-                            items(items = accounts, key = { account ->
+                            items(items = accounts /*, key = { account ->
                                 account.id
-                            }) { account ->
+                            } */) { account ->
                                 Member(
                                     modifier = Modifier.clickable {
                                         startActivity(Intent(baseContext, ProfileActivity::class.java).apply {
