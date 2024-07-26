@@ -114,7 +114,7 @@ class GroupDetailsActivity : ComponentActivity() {
                                             putExtra("info", account.bundle())
                                             putExtra("authorize", authorize.bundle())
                                         })
-                                    }, account = account, owner = owner
+                                    }.padding(vertical = 20.dp), account = account, owner = owner
                                 )
                             }
                         }
@@ -162,7 +162,7 @@ class GroupDetailsActivity : ComponentActivity() {
                 model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1", loading = {
                     CircularProgressIndicator()
                 }, contentDescription = "avatar", modifier = Modifier
-                    .size(65.dp)
+                    .size(25.dp)
                     .clip(CircleShape)
             )
             Text(text = account.nickname)
