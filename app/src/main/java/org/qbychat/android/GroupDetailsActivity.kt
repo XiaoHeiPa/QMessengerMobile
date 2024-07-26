@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,11 +30,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.paging.Pager
@@ -77,26 +80,44 @@ class GroupDetailsActivity : ComponentActivity() {
                 var owner by remember {
                     mutableIntStateOf(-1)
                 }
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.primary
-                        ), title = {
-                            Text(text = title)
-                        }, navigationIcon = {
-                            IconButton(onClick = { this@GroupDetailsActivity.finish() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back"
-                                )
-                            }
-                        })
-                    }
-                ) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+                    TopAppBar(colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary
+                    ), title = {
+                        Text(text = title)
+                    }, navigationIcon = {
+                        IconButton(onClick = { this@GroupDetailsActivity.finish() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    })
+                }) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
                         GroupDetails(targetId, title, description, owner)
+
+                        val accounts = remember {
+                            mutableStateListOf<Account>()
+                        }
+                        repeat(10) {
+                            accounts.add(Account.UNKNOWN)
+                        }
+                        LazyColumn {
+                            items(items = accounts, key = { account ->
+                                account.id
+                            }) { account ->
+                                Member(
+                                    modifier = Modifier.clickable {
+                                        startActivity(Intent(baseContext, ProfileActivity::class.java).apply {
+                                            putExtra("info", account.bundle())
+                                            putExtra("authorize", authorize.bundle())
+                                        })
+                                    }, account = account, owner = owner
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -118,12 +139,9 @@ class GroupDetailsActivity : ComponentActivity() {
         }
         Row(modifier = Modifier.padding(10.dp)) {
             SubcomposeAsyncImage(
-                model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${id}&isUser=0",
-                loading = {
+                model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${id}&isUser=0", loading = {
                     CircularProgressIndicator()
-                },
-                contentDescription = "avatar",
-                modifier = Modifier
+                }, contentDescription = "avatar", modifier = Modifier
                     .size(65.dp)
                     .clip(CircleShape)
             )
@@ -138,15 +156,29 @@ class GroupDetailsActivity : ComponentActivity() {
     }
 
     @Composable
-    fun Member() {
-
+    fun Member(modifier: Modifier = Modifier, account: Account, owner: Int) {
+        Row {
+            SubcomposeAsyncImage(
+                model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1", loading = {
+                    CircularProgressIndicator()
+                }, contentDescription = "avatar", modifier = Modifier
+                    .size(65.dp)
+                    .clip(CircleShape)
+            )
+            Text(text = account.nickname)
+            if (account.id == owner) {
+                Icon(
+                    painter = painterResource(id = R.drawable.manage_accounts),
+                    contentDescription = "Group owner"
+                )
+            }
+        }
     }
 
     @Composable
     fun Info(title: String, description: String, owner: Account) {
         Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge
+            text = title, style = MaterialTheme.typography.titleLarge
         )
         Text(text = description, style = MaterialTheme.typography.bodyMedium)
         OwnerDetails(owner)
@@ -161,12 +193,9 @@ class GroupDetailsActivity : ComponentActivity() {
             })
         }) {
             SubcomposeAsyncImage(
-                model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${owner.id}&isUser=1",
-                loading = {
+                model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${owner.id}&isUser=1", loading = {
                     CircularProgressIndicator()
-                },
-                contentDescription = "avatar",
-                modifier = Modifier
+                }, contentDescription = "avatar", modifier = Modifier
                     .size(15.dp)
                     .clip(CircleShape)
             )
