@@ -64,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.qbychat.android.service.MessagingService
 import org.qbychat.android.ui.theme.QMessengerMobileTheme
 import org.qbychat.android.utils.BACKEND
@@ -139,6 +140,9 @@ class MainActivity : ComponentActivity() {
                 val channels = remember {
                     mutableStateListOf<Channel>()
                 }
+                var topText by remember {
+                    mutableStateOf("QMessenger")
+                }
                 // check login
                 val accountJson = filesDir.resolve("account.json")
                 if (!accountJson.exists()) {
@@ -179,39 +183,44 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Thread {
-                    account = authorize.token.account()!!
-                    if (!isServiceBound) bindService(
-                        Intent(
-                            baseContext,
-                            MessagingService::class.java
-                        ).apply { putExtra("token", authorize.token) },
-                        connection,
-                        Context.BIND_AUTO_CREATE
-                    )
-
-
-                    authorize.token.getGroups()?.forEach { group ->
-                        channels.add(
-                            Channel(
-                                group.id,
-                                group.shownName,
-                                group.name,
-                                false
+                    if (runCatching {
+                            account = authorize.token.account()!!
+                            if (!isServiceBound) bindService(
+                                Intent(
+                                    baseContext,
+                                    MessagingService::class.java
+                                ).apply { putExtra("token", authorize.token) },
+                                connection,
+                                BIND_AUTO_CREATE
                             )
-                        )
-                    }
 
-                    authorize.token.getFriends()?.forEach { friend ->
-                        channels.add(
-                            Channel(
-                                friend.id,
-                                friend.nickname,
-                                friend.username,
-                                true
-                            )
-                        )
-                    }
 
+                            authorize.token.getGroups()?.forEach { group ->
+                                channels.add(
+                                    Channel(
+                                        group.id,
+                                        group.shownName,
+                                        group.name,
+                                        false
+                                    )
+                                )
+                            }
+
+                            authorize.token.getFriends()?.forEach { friend ->
+                                channels.add(
+                                    Channel(
+                                        friend.id,
+                                        friend.nickname,
+                                        friend.username,
+                                        true
+                                    )
+                                )
+                            }
+                        }.isFailure) {
+                        topText = R.string.no_network.translate(baseContext)
+                    } else {
+                        topText = "QMessenger"
+                    }
                 }.apply {
                     start()
                 }
@@ -311,7 +320,7 @@ class MainActivity : ComponentActivity() {
                                 ),
                                 title = {
                                     Text(
-                                        "QMessenger"
+                                        topText
                                     )
                                 },
                                 navigationIcon = {
@@ -350,7 +359,8 @@ class MainActivity : ComponentActivity() {
                                             .padding(10.dp)
                                             .fillMaxWidth()
                                             .clickable {
-                                                val p0 = Intent(baseContext, ChatActivity::class.java)
+                                                val p0 =
+                                                    Intent(baseContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
                                                 p0.putExtra("account", account.bundle())
                                                 p0.putExtra("authorize", authorize.bundle())
@@ -415,18 +425,6 @@ class MainActivity : ComponentActivity() {
             Box {
                 Icon(Icons.Filled.Add, "Floating action button.")
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    QMessengerMobileTheme {
-        FloatingActionButton(
-            onClick = { },
-        ) {
-            Icon(Icons.Filled.Add, "Floating action button.")
         }
     }
 }

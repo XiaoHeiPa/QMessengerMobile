@@ -37,4 +37,6 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="nickname">Nickname</string>
     <string name="bio">Bio</string>
+    <string name="copy_successfully">Copied successfully</string>
+    <string name="no_network">Disconnected</string>
 </resources>

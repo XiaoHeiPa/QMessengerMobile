@@ -164,6 +164,7 @@ class LoginActivity : ComponentActivity() {
                         if (authorize != null) {
                             authorize.password = password.text
                             saveAuthorize(mContext, authorize)
+                            this@LoginActivity.finish()
                             startActivity(Intent(mContext, MainActivity::class.java))
                         } else {
                             Looper.prepare()

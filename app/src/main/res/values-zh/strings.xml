@@ -30,4 +30,6 @@
     <string name="edit_profile">编辑档案</string>
     <string name="nickname">昵称</string>
     <string name="bio">介绍</string>
+    <string name="copy_successfully">复制成功</string>
+    <string name="no_network">无网络</string>
 </resources>

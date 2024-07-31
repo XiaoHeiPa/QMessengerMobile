@@ -61,10 +61,10 @@ class MessagingService : Service() {
     }
 
     private fun connectWS() {
-        websocket = token.connect({
+        websocket = token.connect(onWSClosed = {
             Log.i(TAG, "WS disconnected.")
             unbindService(MainActivity.connection)
-        }) { _, responseJson ->
+        }, onMessageReceived = { _, responseJson ->
             val response = JSON.decodeFromString<MessengerResponse<JsonObject>>(responseJson)
             if (response.hasError) {
                 return@connect // do nothing
@@ -75,7 +75,7 @@ class MessagingService : Service() {
                     putExtra("message", message.bundle())
                 })
             }
-        }
+        })
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

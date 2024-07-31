@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -215,6 +216,7 @@ class ChatActivity : ComponentActivity() {
                                                 }
                                             }
                                             selectedMessages.clear()
+                                            Toast.makeText(baseContext, R.string.copy_successfully, Toast.LENGTH_SHORT).show()
                                         }
                                     ) {
                                         Icon(painter = painterResource(id = R.drawable.file_copy), contentDescription = "Copy")
