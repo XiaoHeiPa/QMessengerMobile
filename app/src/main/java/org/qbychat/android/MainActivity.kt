@@ -171,7 +171,7 @@ class MainActivity : ComponentActivity() {
                     if (runCatching {
                             loadInfo(accountInfoJson, account, channels)
                         }.isFailure) {
-                        topText = R.string.no_network.translate(baseContext)
+                        topText = R.string.no_network.translate(application)
                     } else {
                         topText = "QMessenger"
                     }

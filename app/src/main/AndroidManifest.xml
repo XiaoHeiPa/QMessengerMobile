@@ -16,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QMessengerMobile"
         tools:targetApi="S">
+        <receiver
+            android:name=".receiver.NetworkReceiver"
+            android:enabled="true"
+            android:exported="true"/>
+
         <activity
             android:name=".EditProfileActivity"
             android:exported="false"

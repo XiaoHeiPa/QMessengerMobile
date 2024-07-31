@@ -268,7 +268,7 @@ fun Int.group(token: String = "", onSuccess: (Group) -> Unit) {
 fun String.connect(
     onWSClosed: () -> Unit = {},
     onMessageReceived: (websocket: WebSocket, response: String) -> Unit
-): WebSocket {
+): WebSocket? = runCatching {
     val request: Request = Request.Builder()
         .url("$WS_PROTOCOL$BACKEND/ws/messenger")
         .header("Authorization", "Bearer $this")
@@ -297,7 +297,7 @@ fun String.connect(
             onWSClosed()
         }
     })
-    return webSocket
-}
+    webSocket
+}.getOrNull()
 
 
