@@ -282,7 +282,7 @@ fun String.connect(
 
         override fun onMessage(webSocket: WebSocket, text: String) {
             super.onMessage(webSocket, text)
-            Log.i("Websocket", "Received message: $text")
+            Log.i(TAG, "Received message: $text")
             onMessageReceived(webSocket, text)
         }
 
@@ -293,6 +293,7 @@ fun String.connect(
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             super.onClosed(webSocket, code, reason)
+            Log.i(TAG, "Websocket disconnected")
             onWSClosed()
         }
     })

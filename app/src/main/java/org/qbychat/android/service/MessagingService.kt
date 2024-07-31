@@ -63,7 +63,7 @@ class MessagingService : Service() {
     private fun connectWS() {
         websocket = token.connect(onWSClosed = {
             Log.i(TAG, "WS disconnected.")
-            unbindService(MainActivity.connection)
+            if (MainActivity.isServiceBound) unbindService(MainActivity.connection)
         }, onMessageReceived = { _, responseJson ->
             val response = JSON.decodeFromString<MessengerResponse<JsonObject>>(responseJson)
             if (response.hasError) {

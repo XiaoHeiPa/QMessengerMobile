@@ -48,12 +48,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,6 +83,7 @@ import org.qbychat.android.utils.refresh
 import org.qbychat.android.utils.requestPermission
 import org.qbychat.android.utils.saveAuthorize
 import org.qbychat.android.utils.translate
+import java.io.File
 import java.util.Date
 
 
@@ -91,10 +94,10 @@ const val CHANNEL_ID = "qmessenger"
 )
 class MainActivity : ComponentActivity() {
     lateinit var authorize: Authorize
+
     companion object {
         var messagingService: MessagingService? = null
         var isServiceBound = false
-
 
 
         val connection = object : ServiceConnection {
@@ -152,7 +155,7 @@ class MainActivity : ComponentActivity() {
                 authorize = JSON.decodeFromString<Authorize>(accountJson.readText())
                 // check token expire date
                 val accountInfoJson = cacheDir.resolve("account-info.json")
-                var account by remember {
+                var account = remember {
                     mutableStateOf(
                         Account(
                             -1,
@@ -163,59 +166,10 @@ class MainActivity : ComponentActivity() {
                         )
                     )
                 }
-                if (accountInfoJson.exists()) {
-                    account = JSON.decodeFromString(accountInfoJson.readText())
-                }
-                if (Date().time >= authorize.expire) {
-                    Toast.makeText(
-                        baseContext,
-                        stringResource(R.string.refresh_token),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    Thread {
-                        authorize.refresh(baseContext) {
-                            doLogin()
-                        }
-                    }.apply {
-                        start()
-                        join()
-                    }
-                }
 
                 Thread {
                     if (runCatching {
-                            account = authorize.token.account()!!
-                            if (!isServiceBound) bindService(
-                                Intent(
-                                    baseContext,
-                                    MessagingService::class.java
-                                ).apply { putExtra("token", authorize.token) },
-                                connection,
-                                BIND_AUTO_CREATE
-                            )
-
-
-                            authorize.token.getGroups()?.forEach { group ->
-                                channels.add(
-                                    Channel(
-                                        group.id,
-                                        group.shownName,
-                                        group.name,
-                                        false
-                                    )
-                                )
-                            }
-
-                            authorize.token.getFriends()?.forEach { friend ->
-                                channels.add(
-                                    Channel(
-                                        friend.id,
-                                        friend.nickname,
-                                        friend.username,
-                                        true
-                                    )
-                                )
-                            }
+                            loadInfo(accountInfoJson, account, channels)
                         }.isFailure) {
                         topText = R.string.no_network.translate(baseContext)
                     } else {
@@ -236,11 +190,11 @@ class MainActivity : ComponentActivity() {
                                     startActivity(Intent(baseContext, ProfileActivity::class.java)
                                         .apply {
                                             putExtra("authorize", authorize.bundle())
-                                            putExtra("info", account.bundle())
+                                            putExtra("info", account.value.bundle())
                                         })
                                 }) {
                                 SubcomposeAsyncImage(
-                                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.id}&isUser=1",
+                                    model = "$HTTP_PROTOCOL$BACKEND/avatar/query?id=${account.value.id}&isUser=1",
                                     loading = {
                                         CircularProgressIndicator()
                                     },
@@ -251,15 +205,15 @@ class MainActivity : ComponentActivity() {
                                 )
 
                                 Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(text = account.nickname)
+                                    Text(text = account.value.nickname)
                                     Text(
-                                        text = account.email,
+                                        text = account.value.email,
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                                     )
                                 }
                             }
                             HorizontalDivider()
-                            if (account.role == Role.ADMIN) {
+                            if (account.value.role == Role.ADMIN) {
                                 NavigationDrawerItem(
                                     icon = {
                                         Icon(
@@ -270,10 +224,14 @@ class MainActivity : ComponentActivity() {
                                     label = { Text(text = stringResource(R.string.admin)) },
                                     selected = false,
                                     onClick = {
-                                        startActivity(Intent(baseContext, AdminActivity::class.java).apply {
-                                            putExtra("token", authorize.token)
-                                            putExtra("account", account.bundle())
-                                        })
+                                        startActivity(
+                                            Intent(
+                                                baseContext,
+                                                AdminActivity::class.java
+                                            ).apply {
+                                                putExtra("token", authorize.token)
+                                                putExtra("account", account.value.bundle())
+                                            })
                                     }
                                 )
                             }
@@ -302,7 +260,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     accountJson.delete()
                                     accountInfoJson.delete()
-                                    unbindService(connection)
+                                    if (isServiceBound) unbindService(connection)
                                     doLogin()
                                 }
                             )
@@ -362,7 +320,7 @@ class MainActivity : ComponentActivity() {
                                                 val p0 =
                                                     Intent(baseContext, ChatActivity::class.java)
                                                 p0.putExtra("channel", channel.bundle())
-                                                p0.putExtra("account", account.bundle())
+                                                p0.putExtra("account", account.value.bundle())
                                                 p0.putExtra("authorize", authorize.bundle())
                                                 startActivity(p0)
                                             }
@@ -406,6 +364,53 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    private fun loadInfo(
+        accountInfoJson: File,
+        account: MutableState<Account>,
+        channels: SnapshotStateList<Channel>
+    ): Unit? {
+        var account1 = account
+        if (accountInfoJson.exists()) {
+            account1 = JSON.decodeFromString(accountInfoJson.readText())
+        }
+        if (Date().time >= authorize.expire) {
+            authorize.refresh(baseContext) {
+                doLogin()
+            }
+        }
+        account1.value = authorize.token.account()!!
+        if (!isServiceBound) bindService(
+            Intent(
+                baseContext,
+                MessagingService::class.java
+            ).apply { putExtra("token", authorize.token) },
+            connection,
+            BIND_AUTO_CREATE
+        )
+
+        authorize.token.getGroups()?.forEach { group ->
+            channels.add(
+                Channel(
+                    group.id,
+                    group.shownName,
+                    group.name,
+                    false
+                )
+            )
+        }
+
+        return authorize.token.getFriends()?.forEach { friend ->
+            channels.add(
+                Channel(
+                    friend.id,
+                    friend.nickname,
+                    friend.username,
+                    true
+                )
+            )
         }
     }
 
